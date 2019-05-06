@@ -130,7 +130,7 @@ def main():
 
     ncf.conventions = "CF-1.8"
     ncf.featureType = "timeSeries"
-    ncf.history = str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2.py'
+    ncf.history = str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2_cdl.py'
 
     # Write data
     time_idx[:] = np.arange(0, nts, 1)

@@ -163,7 +163,7 @@ def main():
     cdl_file.write('  // global attributes:\n')
     cdl_file.write('  :Conventions = "CF-1.8";\n')
     cdl_file.write('  :featureType = "timeSeries";\n')
-    cdl_file.write('  :history = "' + str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2.py";\n')
+    cdl_file.write('  :history = "' + str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2_cdl.py";\n')
 
     # Write data
     cdl_file.write('\ndata:\n\n')
