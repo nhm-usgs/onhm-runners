@@ -1,183 +1,66 @@
-import datetime as dt  # Python standard library datetime  module
-import numpy as np
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap, addcyclic, shiftgrid
+import datetime
 
-nc_fn = '/work/markstro/operat/docker_test/NHM-PRMS_CONUS/sandbox/nhm_output_example.ncf'
-
-
-def read(nc_fid):
-
-    nc_attrs = nc_fid.ncattrs()
-    for nc_attr in nc_attrs:
-        print '\t%s:' % nc_attr, repr(nc_fid.getncattr(nc_attr))
-
-    nc_dims = [dim for dim in nc_fid.dimensions]  # list of nc dimensions
-    for dim in nc_dims:
-        print "\tName:", dim
-        print "\t\tsize:", len(nc_fid.dimensions[dim])
-
-    nc_vars = [var for var in nc_fid.variables]  # list of nc variables
-    for var in nc_vars:
-        if var not in nc_dims:
-            print '\tName:', var
-            print "\t\tdimensions:", nc_fid.variables[var].dimensions
-            print "\t\tsize:", nc_fid.variables[var].size
-
-    return nc_attrs, nc_dims, nc_vars
+dir = '/work/markstro/operat/docker_test/NHM-PRMS_CONUS/sandbox/'
+nc_fn = dir + 'new.nc'
 
 
 if __name__ == '__main__':
     nc_fid = Dataset(nc_fn, 'r')
-    nc_attrs, nc_dims, nc_vars = read(nc_fid)
+    nc_attrs = nc_fid.ncattrs()
+    print 'attrs', nc_attrs
 
+    nc_dims = [dim for dim in nc_fid.dimensions]
+    print 'dims', nc_dims
 
-    # Extract data from NetCDF file
-    # lats = nc_fid.variables['lat'][:]  # extract/copy the data
-    # lons = nc_fid.variables['lon'][:]
-    # time = nc_fid.variables['time'][:]
-    # air = nc_fid.variables['air'][:]  # shape is time, lat, lon as shown above
-    #
-    # time_idx = 237  # some random day in 2012
-    # # Python and the renalaysis are slightly off in time so this fixes that problem
-    # offset = dt.timedelta(hours=48)
-    # # List of all times in the file as datetime objects
-    # dt_time = [dt.date(1, 1, 1) + dt.timedelta(hours=t) - offset\
-    #            for t in time]
-    # cur_time = dt_time[time_idx]
-    #
-    # # Plot of global temperature on our random day
-    # fig = plt.figure()
-    # fig.subplots_adjust(left=0., right=1., bottom=0., top=0.9)
-    # # Setup the map. See http://matplotlib.org/basemap/users/mapsetup.html
-    # # for other projections.
-    # m = Basemap(projection='moll', llcrnrlat=-90, urcrnrlat=90,\
-    #             llcrnrlon=0, urcrnrlon=360, resolution='c', lon_0=0)
-    # m.drawcoastlines()
-    # m.drawmapboundary()
-    # # Make the plot continuous
-    # air_cyclic, lons_cyclic = addcyclic(air[time_idx, :, :], lons)
-    # # Shift the grid so lons go from -180 to 180 instead of 0 to 360.
-    # air_cyclic, lons_cyclic = shiftgrid(180., air_cyclic, lons_cyclic, start=False)
-    # # Create 2D lat/lon arrays for Basemap
-    # lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
-    # # Transforms lat/lon into plotting coordinates for projection
-    # x, y = m(lon2d, lat2d)
-    # # Plot of air temperature with 11 contour intervals
-    # cs = m.contourf(x, y, air_cyclic, 11, cmap=plt.cm.Spectral_r)
-    # cbar = plt.colorbar(cs, orientation='horizontal', shrink=0.5)
-    # cbar.set_label("%s (%s)" % (nc_fid.variables['air'].var_desc,\
-    #                             nc_fid.variables['air'].units))
-    # plt.title("%s on %s" % (nc_fid.variables['air'].var_desc, cur_time))
-    #
-    # # Writing NetCDF files
-    # # For this example, we will create two NetCDF4 files. One with the global air
-    # # temperature departure from its value at Darwin, Australia. The other with
-    # # the temperature profile for the entire year at Darwin.
-    # darwin = {'name': 'Darwin, Australia', 'lat': -12.45, 'lon': 130.83}
-    #
-    # # Find the nearest latitude and longitude for Darwin
-    # lat_idx = np.abs(lats - darwin['lat']).argmin()
-    # lon_idx = np.abs(lons - darwin['lon']).argmin()
-    #
-    # # Simple example: temperature profile for the entire year at Darwin.
-    # # Open a new NetCDF file to write the data to. For format, you can choose from
-    # # 'NETCDF3_CLASSIC', 'NETCDF3_64BIT', 'NETCDF4_CLASSIC', and 'NETCDF4'
-    # w_nc_fid = Dataset('darwin_2012.nc', 'w', format='NETCDF4')
-    # w_nc_fid.description = "NCEP/NCAR Reanalysis %s from its value at %s. %s" %\
-    #                       (nc_fid.variables['air'].var_desc.lower(),\
-    #                        darwin['name'], nc_fid.description)
-    # # Using our previous dimension info, we can create the new time dimension
-    # # Even though we know the size, we are going to set the size to unknown
-    # w_nc_fid.createDimension('time', None)
-    # w_nc_dim = w_nc_fid.createVariable('time', nc_fid.variables['time'].dtype,\
-    #                                    ('time',))
-    # # You can do this step yourself but someone else did the work for us.
-    # for ncattr in nc_fid.variables['time'].ncattrs():
-    #     w_nc_dim.setncattr(ncattr, nc_fid.variables['time'].getncattr(ncattr))
-    # # Assign the dimension data to the new NetCDF file.
-    # w_nc_fid.variables['time'][:] = time
-    # w_nc_var = w_nc_fid.createVariable('air', 'f8', ('time'))
-    # w_nc_var.setncatts({'long_name': u"mean Daily Air temperature",\
-    #                     'units': u"degK", 'level_desc': u'Surface',\
-    #                     'var_desc': u"Air temperature",\
-    #                     'statistic': u'Mean\nM'})
-    # w_nc_fid.variables['air'][:] = air[time_idx, lat_idx, lon_idx]
-    # w_nc_fid.close()  # close the new file
-    #
-    # # A plot of the temperature profile for Darwin in 2012
-    # fig = plt.figure()
-    # plt.plot(dt_time, air[:, lat_idx, lon_idx], c='r')
-    # plt.plot(dt_time[time_idx], air[time_idx, lat_idx, lon_idx], c='b', marker='o')
-    # plt.text(dt_time[time_idx], air[time_idx, lat_idx, lon_idx], cur_time,\
-    #          ha='right')
-    # fig.autofmt_xdate()
-    # plt.ylabel("%s (%s)" % (nc_fid.variables['air'].var_desc,\
-    #                         nc_fid.variables['air'].units))
-    # plt.xlabel("Time")
-    # plt.title("%s from\n%s for %s" % (nc_fid.variables['air'].var_desc,\
-    #                                   darwin['name'], cur_time.year))
-    #
-    # # Complex example: global temperature departure from its value at Darwin
-    # departure = air[:, :, :] - air[:, lat_idx, lon_idx].reshape((time.shape[0],\
-    #                                                              1, 1))
-    #
-    # # Open a new NetCDF file to write the data to. For format, you can choose from
-    # # 'NETCDF3_CLASSIC', 'NETCDF3_64BIT', 'NETCDF4_CLASSIC', and 'NETCDF4'
-    # w_nc_fid = Dataset('air.departure.sig995.2012.nc', 'w', format='NETCDF4')
-    # w_nc_fid.description = "The departure of the NCEP/NCAR Reanalysis " +\
-    #                       "%s from its value at %s. %s" %\
-    #                       (nc_fid.variables['air'].var_desc.lower(),\
-    #                        darwin['name'], nc_fid.description)
-    # # Using our previous dimension information, we can create the new dimensions
-    # data = {}
-    # for dim in nc_dims:
-    #     w_nc_fid.createDimension(dim, nc_fid.variables[dim].size)
-    #     data[dim] = w_nc_fid.createVariable(dim, nc_fid.variables[dim].dtype,\
-    #                                         (dim,))
-    #     # You can do this step yourself but someone else did the work for us.
-    #     for ncattr in nc_fid.variables[dim].ncattrs():
-    #         data[dim].setncattr(ncattr, nc_fid.variables[dim].getncattr(ncattr))
-    # # Assign the dimension data to the new NetCDF file.
-    # w_nc_fid.variables['time'][:] = time
-    # w_nc_fid.variables['lat'][:] = lats
-    # w_nc_fid.variables['lon'][:] = lons
-    #
-    # # Ok, time to create our departure variable
-    # w_nc_var = w_nc_fid.createVariable('air_dep', 'f8', ('time', 'lat', 'lon'))
-    # w_nc_var.setncatts({'long_name': u"mean Daily Air temperature departure",\
-    #                     'units': u"degK", 'level_desc': u'Surface',\
-    #                     'var_desc': u"Air temperature departure",\
-    #                     'statistic': u'Mean\nM'})
-    # w_nc_fid.variables['air_dep'][:] = departure
-    # w_nc_fid.close()  # close the new file
-    #
-    # # Rounded maximum absolute value of the departure used for contouring
-    # max_dep = np.round(np.abs(departure[time_idx, :, :]).max()+5., decimals=-1)
-    #
-    # # Generate a figure of the departure for a single day
-    # fig = plt.figure()
-    # fig.subplots_adjust(left=0., right=1., bottom=0., top=0.9)
-    # m = Basemap(projection='moll', llcrnrlat=-90, urcrnrlat=90,\
-    #             llcrnrlon=0, urcrnrlon=360, resolution='c', lon_0=0)
-    # m.drawcoastlines()
-    # m.drawmapboundary()
-    # dep_cyclic, lons_cyclic = addcyclic(departure[time_idx, :, :], lons)
-    # dep_cyclic, lons_cyclic = shiftgrid(180., dep_cyclic, lons_cyclic, start=False)
-    # lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
-    # x, y = m(lon2d, lat2d)
-    # levels = np.linspace(-max_dep, max_dep, 11)
-    # cs = m.contourf(x, y, dep_cyclic, levels=levels, cmap=plt.cm.bwr)
-    # x, y = m(darwin['lon'], darwin['lat'])
-    # plt.plot(x, y, c='c', marker='o')
-    # plt.text(x, y, 'Darwin,\nAustralia', color='r', weight='semibold')
-    # cbar = plt.colorbar(cs, orientation='horizontal', shrink=0.5)
-    # cbar.set_label("%s departure (%s)" % (nc_fid.variables['air'].var_desc,\
-    #                             nc_fid.variables['air'].units))
-    # plt.title("Departure of Global %s from\n%s for %s" %\
-    #           (nc_fid.variables['air'].var_desc, darwin['name'], cur_time))
-    # plt.show()
-    #
-    # # Close original NetCDF file.
+    # Figure out the variable names with data in the ncf.
+    nc_vars = [var for var in nc_fid.variables]
+    remove_list = list(nc_dims)
+    remove_list.extend(['hru_lat', 'hru_lon', 'seg_lat', 'seg_lon'])
+    var_names = [e for e in nc_vars if e not in remove_list]
+    print 'var_names', var_names
+
+    time = nc_fid.variables['time'][:]
+    nts = len(time)
+    print time, nts
+
+    # TODO Need to get base_date_str from the ncf file. It's not there now
+    base_date_str = "2019-05-05"
+    tok = base_date_str.split('-')
+    base_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
+    print base_date
+
+    # Read the values into a dictionary.
+    vals = {}
+    for var in var_names:
+        f1 = nc_fid.variables[var][:]
+        vals[var] = f1
+
     nc_fid.close()
+
+    # Write CBH files.
+    for name in var_names:
+        v = vals[name]
+        nfeats = len(v[0])
+        fn2 = dir + name + ".cbh"
+        current_date = base_date
+        with open(fn2, 'w') as fp:
+            fp.write('Written by ncf2cbh.py\n')
+            fp.write(name + ' ' + str(nfeats) + '\n')
+            fp.write('########################################\n')
+
+            for ii in xrange(nts):
+                fp.write(str(current_date.year) + ' ' + str(current_date.month) + ' '
+                         + str(current_date.day) + ' 0 0 0')
+                for jj in xrange(nfeats):
+                    if name == 'prcp':
+                        v[ii, jj] = v[ii, jj] / 25.4
+                    elif name == 'tmax':
+                        v[ii, jj] = v[ii, jj] * 9 / 5 + 32
+                    elif name == 'tmin':
+                        v[ii, jj] = v[ii, jj] * 9 / 5 + 32
+                    else:
+                        "don't know how to convert units"
+                    fp.write(' ' + str(v[ii,jj]))
+                fp.write('\n')
+                current_date += datetime.timedelta(days=1)
