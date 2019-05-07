@@ -1,6 +1,9 @@
 # Markstrom
 # Wed Mar 13 09:43:53 MDT 2019
 
+# This is broken and shouldn't be run anymore. I keep it as an example of writing a cdl file.
+# There might be better examples, but I'm not sure why cdl files need to be written anymore.
+
 #import os
 from prms_utils import csv_reader
 import numpy as np
@@ -47,12 +50,12 @@ cdl_file_name = out_dir + '/nhm_cbh_example_short.cdl'
 
 def main():
 # Read the PRMS CBH
-    nts, nhrus, base_date, foo = csv_reader.read_cbh(in_dir + '/' + 'prcp_short.csv')
+    nts, nhrus, base_date, foo = csv_reader.read_headless_cbh(in_dir + '/' + 'prcp_short.csv')
     prcp_vals = [num * 25.4 for num in foo] # convert inches to mm
     print nts, nhrus, base_date
     print prcp_vals[0][nhrus-1], prcp_vals[nts-1][0], prcp_vals[nts-1][nhrus-1]
 
-    nts1, nhrus1, base_date1, foo = csv_reader.read_cbh(in_dir + '/' + 'tmax_short.csv')
+    nts1, nhrus1, base_date1, foo = csv_reader.read_headless_cbh(in_dir + '/' + 'tmax_short.csv')
     tmax_vals = [(num -32.0) * 5.0/9.0 for num in foo] # convert F to C
     print nts, nhrus, base_date
     print tmax_vals[0][nhrus-1], tmax_vals[nts-1][0], tmax_vals[nts-1][nhrus-1]
@@ -66,7 +69,7 @@ def main():
     if base_date != base_date1:
         raise ValueError('base date not the same in prcp_short.csv and tmax_short.csv')
 
-    nts2, nhrus2, base_date2, foo = csv_reader.read_cbh(in_dir + '/' + 'tmin_short.csv')
+    nts2, nhrus2, base_date2, foo = csv_reader.read_headless_cbh(in_dir + '/' + 'tmin_short.csv')
     tmin_vals = [(num - 32.0) * 5.0 / 9.0 for num in foo]  # convert F to C
     print nts2, nhrus2, base_date2
     print tmin_vals[0][nhrus - 1], tmin_vals[nts - 1][0], tmin_vals[nts - 1][nhrus - 1]
