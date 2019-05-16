@@ -15,11 +15,11 @@ json_file = dir + "/" + "variable_info.json"
 
 def read_feature_georef(cntl, name):
     fn1 = cntl["feature_georef"][name]["file"]
-    print fn1
+    print (fn1)
 
     nfeat = sum(1 for line in open(fn1))
     vals = np.zeros(shape=(nfeat))
-    with open(fn1, 'rb') as csvfile:
+    with open(fn1, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -47,7 +47,7 @@ def write_timeseries_block(cntl, ncf, name):
 
 
 def write_timeseries_values(cntl, ncf, name, vals, nc_var):
-    for ii in xrange(0, len(vals)):
+    for ii in range(0, len(vals)):
         nc_var[ii, :] = vals[ii]
 
 
@@ -61,7 +61,7 @@ def main():
     dim_list = set()
 
     for var_name in var_names:
-        print "processing " + var_name
+        print("processing " + var_name)
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
@@ -71,8 +71,8 @@ def main():
         iis = len(vals)
         jjs = len(vals[0])
 
-        for ii in xrange(0, iis):
-            for jj in xrange(1, jjs):
+        for ii in range(0, iis):
+            for jj in range(1, jjs):
                 vals[ii,jj] = vals[ii,jj] * conversion_factor
 
         val_list.append(vals)
@@ -91,7 +91,7 @@ def main():
         nsegments = len(seg_lat_vals)
 
 # write the ncf file
-    print 'writing netcdf file ' + cntl['ncf_file_name']
+    print('writing netcdf file ' + cntl['ncf_file_name'])
     ncf = Dataset(cntl['ncf_file_name'], 'w', format='NETCDF4_CLASSIC')
 
     # Write dimensions block

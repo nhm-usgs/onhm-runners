@@ -14,7 +14,7 @@ json_file = dir + "/" + "variable_info.json"
 
 def read_feature_georef(cntl, name):
     fn1 = cntl["feature_georef"][name]["file"]
-    print fn1
+    print(fn1)
 
     nfeat = sum(1 for line in open(fn1))
     vals = np.zeros(shape=(nfeat))
@@ -50,9 +50,9 @@ def write_timeseries_values(cntl, cdl_file, name, vals):
     nts = len(vals)
     nhrus = len(vals[0])
 
-    for ii in xrange(0, nts):
+    for ii in range(0, nts):
         cdl_file.write('  ' + str(fmt % vals[ii][0]))
-        for jj in xrange(1, nhrus):
+        for jj in range(1, nhrus):
             cdl_file.write(', ' + str(fmt % vals[ii][jj]))
         if ii == nts-1:
             cdl_file.write('\n')
@@ -71,7 +71,7 @@ def main():
     dim_list = set()
 
     for var_name in var_names:
-        print "processing " + var_name
+        print("processing " + var_name)
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
@@ -96,7 +96,7 @@ def main():
 #     if base_date != base_date2:
 #         raise ValueError('base date not the same in nhru_soil_moist.csv and nsegment_seg_outflow.csv')
 
-    print dim_list
+    print(dim_list)
 
     nhrus = -1
     if 'hruid' in dim_list:
@@ -111,7 +111,7 @@ def main():
         nsegments = len(seg_lat_vals)
 
 # write the cdl file
-    print 'writing cdl file ' + cntl['cdl_file_name']
+    print('writing cdl file ' + cntl['cdl_file_name'])
     cdl_file = open(cntl['cdl_file_name'], 'w')
     cdl_file.write('netcdf ' + cntl["nc_name"] + ' {' + '\n')
 
@@ -171,7 +171,7 @@ def main():
 # time
     cdl_file.write('time =\n')
     cdl_file.write('  0')
-    for ii in xrange(1, nts):
+    for ii in range(1, nts):
         cdl_file.write(', ' + str(ii))
     cdl_file.write(';\n\n')
 
@@ -179,7 +179,7 @@ def main():
 # hruid
         cdl_file.write('hruid =\n')
         cdl_file.write('  1')
-        for ii in xrange(2, nhrus):
+        for ii in range(2, nhrus):
             cdl_file.write(', ' + str(ii))
         cdl_file.write(';\n\n')
 
@@ -187,7 +187,7 @@ def main():
 # segid
         cdl_file.write('segid =\n')
         cdl_file.write('  1')
-        for ii in xrange(2, nsegments):
+        for ii in range(2, nsegments):
             cdl_file.write(', ' + str(ii))
         cdl_file.write(';\n\n')
 
@@ -195,14 +195,14 @@ def main():
 # latitude
         cdl_file.write('hru_lat =\n')
         cdl_file.write('  ' + str('%.6f' % hru_lat_vals[0]))
-        for ii in xrange(1, nhrus):
+        for ii in range(1, nhrus):
             cdl_file.write(', ' + str('%.6f' % hru_lat_vals[ii]))
         cdl_file.write(';\n\n')
 
 # longitude
         cdl_file.write('hru_lon =\n')
         cdl_file.write('  ' + str('%.6f' % hru_lon_vals[0]))
-        for ii in xrange(1, nhrus):
+        for ii in range(1, nhrus):
             cdl_file.write(', ' + str('%.6f' % hru_lon_vals[ii]))
         cdl_file.write(';\n\n')
 
@@ -210,14 +210,14 @@ def main():
 # latitude
         cdl_file.write('seg_lat =\n')
         cdl_file.write('  ' + str('%.6f' % seg_lat_vals[0]))
-        for ii in xrange(1, nsegments):
+        for ii in range(1, nsegments):
             cdl_file.write(', ' + str('%.6f' % seg_lat_vals[ii]))
         cdl_file.write(';\n\n')
 
 # longitude
         cdl_file.write('seg_lon =\n')
         cdl_file.write('  ' + str('%.6f' % seg_lon_vals[0]))
-        for ii in xrange(1, nsegments):
+        for ii in range(1, nsegments):
             cdl_file.write(', ' + str('%.6f' % seg_lon_vals[ii]))
         cdl_file.write(';\n\n')
 

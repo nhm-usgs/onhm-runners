@@ -32,7 +32,7 @@ def cdl_writer(cdl_file_name, nc_name, nts, base_date, tz_code, var_list, dims_l
     cdl_file.write('  int time(time);\n')
     cdl_file.write('    time:long_name = "time";\n')
     cdl_file.write('    time:standard_name = "time";\n')
-    print len(base_date), base_date
+    print(len(base_date), base_date)
     time_str = str(base_date[0]) + '-' + str(base_date[1] + '-' + str(base_date[2]) + ' 00:00 ' + tz_code)
     cdl_file.write('    time:units = "days since ' + time_str + '";\n')
 
@@ -51,7 +51,7 @@ def cdl_writer(cdl_file_name, nc_name, nts, base_date, tz_code, var_list, dims_l
 
         if dims is not None:
             foo_dims = '(' + dims[0]
-            for ii in xrange(1, len(dims)):
+            for ii in range(1, len(dims)):
                 foo_dims += ', ' + dims[ii]
             foo_dims = foo_dims + ');\n'
             # print foo_dims
@@ -64,7 +64,7 @@ def cdl_writer(cdl_file_name, nc_name, nts, base_date, tz_code, var_list, dims_l
             elif type_code == 'S':  # string
                 cdl_file.write('  string ' + var_name + foo_dims)
             else:
-                print 'parameter ' + var_name + ' has unknown type.'
+                print('parameter ' + var_name + ' has unknown type.')
 
             cdl_file.write('    ' + var_name + ':long_name = "' + str(long_name) + '";\n')
             cdl_file.write('    ' + var_name + ':units = "' + str(units) + '";\n')
@@ -123,7 +123,7 @@ def cdl_writer(cdl_file_name, nc_name, nts, base_date, tz_code, var_list, dims_l
 
     # Time steps
     cdl_file.write('time =\n  0')
-    for ii in xrange(1, nts + 1):
+    for ii in range(1, nts + 1):
         cdl_file.write(', ' + str(ii))
     cdl_file.write(';\n\n')
 
@@ -131,7 +131,7 @@ def cdl_writer(cdl_file_name, nc_name, nts, base_date, tz_code, var_list, dims_l
     for key in dims_list:
         idname = key + 'id'
         cdl_file.write(idname + ' =\n  1')
-        for ii in xrange(2, ps.get_dim_size(key) + 1):
+        for ii in range(2, ps.get_dim_size(key) + 1):
             cdl_file.write(', ' + str(ii))
         cdl_file.write(';\n\n')
 
@@ -162,7 +162,7 @@ def cdl_writer(cdl_file_name, nc_name, nts, base_date, tz_code, var_list, dims_l
             flat_list = vals
 
         cdl_file.write('  ' + str(flat_list[0]))
-        for ii in xrange(1, len(flat_list)):
+        for ii in range(1, len(flat_list)):
             cdl_file.write(', ' + str(flat_list[ii]))
 
         cdl_file.write(';\n\n')
@@ -200,7 +200,7 @@ def cdl_no_map_writer(cdl_file_name, nc_name, missing_val_set, all_values_dict, 
 
         if foo is not None:
             foo_dims = '(' + foo[0]
-            for ii in xrange(1, len(foo)):
+            for ii in range(1, len(foo)):
                 foo_dims += ', ' + foo[ii]
             foo_dims = foo_dims + ');\n'
             # print foo_dims
@@ -215,7 +215,7 @@ def cdl_no_map_writer(cdl_file_name, nc_name, missing_val_set, all_values_dict, 
             elif type_code == 'S':  # string
                 cdl_file.write('  string ' + var + foo_dims)
             else:
-                print 'parameter ' + var + ' has unknown type.'
+                print('parameter ' + var + ' has unknown type.')
 
             cdl_file.write('    ' + var + ':long_name = "' + str(long_name) + '";\n')
             cdl_file.write('    ' + var + ':units = "' + str(units) + '";\n')
@@ -232,7 +232,7 @@ def cdl_no_map_writer(cdl_file_name, nc_name, missing_val_set, all_values_dict, 
     for key in dims_set:
         idname = key + 'id'
         cdl_file.write(idname + ' =\n  1')
-        for ii in xrange(2, ps.get_dim_size(key) + 1):
+        for ii in range(2, ps.get_dim_size(key) + 1):
             cdl_file.write(', ' + str(ii))
         cdl_file.write(';\n\n')
 
@@ -255,7 +255,7 @@ def cdl_no_map_writer(cdl_file_name, nc_name, missing_val_set, all_values_dict, 
             flat_list = vals
 
         cdl_file.write('  ' + str(flat_list[0]))
-        for ii in xrange(1, len(flat_list)):
+        for ii in range(1, len(flat_list)):
             cdl_file.write(', ' + str(flat_list[ii]))
 
         cdl_file.write(';\n\n')

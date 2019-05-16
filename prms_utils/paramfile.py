@@ -39,7 +39,7 @@ class ParamFile:
 
             num_dim = int(fp.readline().strip())
             d = []
-            for ii in xrange(num_dim):
+            for ii in range(num_dim):
                 d.append(fp.readline().strip())
             p.dims = d
 
@@ -48,7 +48,7 @@ class ParamFile:
             p.type_code = type_t
 
             v = []
-            for ii in xrange(num_vals):
+            for ii in range(num_vals):
                 if type_t == 1:
                     v.append(int(fp.readline().strip()))
                 elif type_t == 2:
@@ -165,7 +165,7 @@ class ParamFile:
             # and from the mean to the min depending on whether the individual value is
             # above or below the mean.
             proportion = []
-            for ii in xrange(len(params)):
+            for ii in range(len(params)):
                 if dev_from_mean[ii] > 0.0:
                     proportion.append(dev_from_mean[ii] / (hi - mean))
                 else:
@@ -173,8 +173,8 @@ class ParamFile:
 
             # redistribute the values based on proportion and the "new" parameter value
             new_params = []
-            print len(proportion)
-            for ii in xrange(len(proportion)):
+            print(len(proportion))
+            for ii in range(len(proportion)):
                 if proportion[ii] > 0.0:
                     new_params.append(proportion[ii] * (hi - new_mean) + new_mean)
                 else:

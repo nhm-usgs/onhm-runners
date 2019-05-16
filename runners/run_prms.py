@@ -26,12 +26,12 @@ def make_init_file(st, et, prms_path, work_dir, init_flag, save_flag, control_fi
     args = prms_path + start_args + end_args + init_vars_from_file + var_save_file + var_init_file +\
            save_vars_to_file + control_arg
 
-    print args
+    print(args)
 
     popen = subprocess.Popen(args.split(), stdout=subprocess.PIPE, cwd=work_dir)
     popen.wait()
     output = popen.stdout.read()
-    print output
+    print(output)
 
 
 def main():

@@ -1,6 +1,7 @@
 from netCDF4 import Dataset
 import datetime
 
+
 def read(nc_fn):
     nc_fid = Dataset(nc_fn, 'r')
     nc_attrs = nc_fid.ncattrs()
@@ -18,13 +19,13 @@ def read(nc_fn):
 
     time = nc_fid.variables['time'][:]
     nts = len(time)
-    print time, nts
+    print(time, nts)
 
     # TODO Need to get base_date_str from the ncf file. It's not there now
     base_date_str = "2019-05-05"
     tok = base_date_str.split('-')
     base_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
-    print base_date
+    print(base_date)
 
     # Read the values into a dictionary.
     vals = {}

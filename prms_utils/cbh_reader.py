@@ -1,5 +1,5 @@
 import numpy as np
-import csv
+# import csv
 import datetime
 import os
 
@@ -38,7 +38,7 @@ def read(cbhfn):
     l = fp.readline()
     while l:
         tok = l.split()
-        for jj in xrange(nfeat):
+        for jj in range(nfeat):
             vals[ii,jj] = float(tok[jj + 6])
         ii = ii + 1
         l = fp.readline()

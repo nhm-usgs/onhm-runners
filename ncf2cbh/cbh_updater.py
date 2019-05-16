@@ -11,10 +11,10 @@ nc_fn = dir + 'new.nc'
 
 def main():
     cbh_var_name, cbh_nts, cbh_nfeat, cbh_start_date, cbh_end_date, cbh_vals = cbh_reader.read(old_cbh_fn)
-    print cbh_var_name, cbh_nts, cbh_nfeat, cbh_start_date, cbh_end_date, cbh_vals
+    print(cbh_var_name, cbh_nts, cbh_nfeat, cbh_start_date, cbh_end_date, cbh_vals)
 
     ncf_var_names, ncf_base_date, ncf_nts, ncf_vals = ncf_reader.read(nc_fn)
-    print ncf_var_names, ncf_base_date, ncf_nts, ncf_vals
+    print(ncf_var_names, ncf_base_date, ncf_nts, ncf_vals)
 
 # TODO this is incomplete because I'm not sure if this is the right approach.
 

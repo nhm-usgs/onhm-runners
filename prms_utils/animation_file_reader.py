@@ -6,7 +6,7 @@ fn = '/ssd/markstro/conusStreamTemp/work_lev3/out/stream_temp.out.nsegment'
 
 def sizes():
     num_lines = sum(1 for line in open(fn))
-    print num_lines
+    print(num_lines)
 
     ii = 0
     with open(fn) as fp:
@@ -44,10 +44,10 @@ def sizes():
 
 def read_vals(first_date, last_date, nfeats, nts, col_names):
 # allocate the arrays
-    dates = np.chararray(nts)
+    dates = np.chararray(int(nts))
     val_list =[]
-    for ii in xrange(len(col_names) - 2):
-        val_list.append(np.zeros([nts, nfeats]))
+    for ii in range(len(col_names) - 2):
+        val_list.append(np.zeros([int(nts), int(nfeats)]))
 
     with open(fn) as fp:
         line = fp.readline()
@@ -68,12 +68,12 @@ def read_vals(first_date, last_date, nfeats, nts, col_names):
 # Check to see if the date stamp has incremented
             if date_string != toks[0]:
                 ii += 1
-                print date_string, str(ii)
+                print(date_string, str(ii))
                 dates[ii] = toks[0]
                 date_string = toks[0]
 
             jj = int(toks[1]) - 1
-            for kk in xrange(len(col_names) - 2):
+            for kk in range(len(col_names) - 2):
                 vals = val_list[kk]
 # ii is the time step, jj is the feature index, kk is the variable
                 vals[ii,jj] = float(toks[2+kk])
@@ -85,13 +85,13 @@ def read_vals(first_date, last_date, nfeats, nts, col_names):
 
 if __name__ == '__main__':
     first_date, last_date, nfeats, nts, col_names = sizes()
-    print first_date, last_date, nfeats, nts, col_names
+    print(first_date, last_date, nfeats, nts, col_names)
     val_list = read_vals(first_date, last_date, nfeats, nts, col_names)
 
     dir = '/ssd/markstro/conusStreamTemp/work_lev3/out/'
-    for kk in xrange(len(col_names) - 2):
+    for kk in range(len(col_names) - 2):
         vals = val_list[kk]
         fn1 = dir + col_names[kk+2] + ".txt"
         np.savetxt(fn1, vals, delimiter=',',fmt='%.4e')
 
-        print vals
+        print(vals)

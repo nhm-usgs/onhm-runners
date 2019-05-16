@@ -1,5 +1,5 @@
 import numpy as np
-import datetime
+# import datetime
 
 
 def var_name_by_dim(dim_name):
@@ -75,7 +75,7 @@ def read(dffn):
     while len(line) > 0:
         split = line.split()
         dates_l[ii] = split[0] + '-' + str("%02d" % int(split[1])) + '-' + str("%02d" % int(split[2]))
-        for jj in xrange(0, nvals):
+        for jj in range(0, nvals):
             vals_l[ii,jj] = float(split[jj+6])
         ii = ii + 1
         line = fp.readline()
@@ -86,7 +86,7 @@ def read(dffn):
 
 if __name__ == '__main__':
     ids, var_names, dates, vals = read('/work/markstro/intern_demo/ModelInput/skunk.data')
-    print ids
-    print var_names
-    print dates
-    print vals
+    print(ids)
+    print(var_names)
+    print(dates)
+    print(vals)

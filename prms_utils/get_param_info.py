@@ -26,7 +26,7 @@ def get_param_info(pname, pfn):
             break
 
     if not found:
-        print 'did not find ', pname
+        print('did not find ', pname)
 
     return long_name, units, standard_name, type_code, dims
 
@@ -57,9 +57,9 @@ def add_attribute_to_all_nodes(pfn):
             dim_list = None
 
         if dim_list is not None:
-            print name, dim_list
+            print(name, dim_list)
             dim_str = dim_list[0]
-            for ii in xrange(1, len(dim_list)):
+            for ii in range(1, len(dim_list)):
                 dim_str += ',' + dim_list[ii]
 
             pa.set('dims', dim_str)

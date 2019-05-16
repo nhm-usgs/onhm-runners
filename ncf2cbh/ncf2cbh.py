@@ -19,10 +19,10 @@ if __name__ == '__main__':
             fp.write(name + ' ' + str(nfeats) + '\n')
             fp.write('########################################\n')
 
-            for ii in xrange(nts):
+            for ii in range(nts):
                 fp.write(str(current_date.year) + ' ' + str(current_date.month) + ' '
                          + str(current_date.day) + ' 0 0 0')
-                for jj in xrange(nfeats):
+                for jj in range(nfeats):
                     if name == 'prcp':
                         v[ii, jj] = v[ii, jj] / 25.4
                     elif name == 'tmax':
