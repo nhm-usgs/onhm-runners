@@ -8,9 +8,7 @@ import json
 import datetime
 import getpass
 from netCDF4 import Dataset
-
-dir = "/work/markstro/operat/docker_test/NHM-PRMS_CONUS"
-json_file = dir + "/" + "variable_info.json"
+import sys, getopt
 
 
 def read_feature_georef(cntl, name):
@@ -51,7 +49,8 @@ def write_timeseries_values(cntl, ncf, name, vals, nc_var):
         nc_var[ii, :] = vals[ii]
 
 
-def main():
+def main(dir):
+    json_file = str(dir) + "/" + "variable_info.json"
     with open(json_file, "r") as read_file:
         cntl = json.load(read_file)
 
@@ -156,4 +155,12 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    dir = "/work/markstro/operat/docker_test/NHM-PRMS_CONUS"
+    argc = len(sys.argv) - 1
+    print(argc)
+
+    if argc == 1:
+        print('setting dir = ' + sys.argv[1])
+        dir = sys.argv[1]
+
+    main(dir)
