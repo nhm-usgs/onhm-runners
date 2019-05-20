@@ -4,10 +4,14 @@
 import json
 
 # PRMS output files
-dir = "/work/markstro/operat/docker_test/NHM-PRMS_CONUS"
+# dir = "/work/markstro/operat/docker_test/NHM-PRMS_CONUS"
+dir = "./"
+hru_dir = '/work/markstro/intern_demo/GIS_Data/hrus_all_conus_geo.shp'
+seg_dir = '/work/markstro/intern_demo/GIS_Data/segs_all_conus_geo.shp'
 outdir = dir + "/output/"
-sandbox = dir + "/sandbox/"
-fn = dir + "/" + "variable_info.json"
+indir = dir + "/input/"
+sandbox = dir + "/output/"
+fn = "/work/markstro/operat/setup/stage/stage_1/NHM-PRMS_CONUS/variable_info.json"
 
 data = {
     "tz_code":'-05:00',
@@ -27,7 +31,7 @@ data = {
             "conversion_factor": "25.4",
             "prms_out_file": outdir + "nhru_soil_moist_tot.csv",
             "georef": {
-                "map": '/work/markstro/intern_demo/GIS_Data/hrus_all_conus_geo.shp',
+                "map": hru_dir,
                 "type": 'Polygon',
                 "dimid":"hruid",
                 "attribute": 'nhm_id'
@@ -44,7 +48,7 @@ data = {
             "conversion_factor": "25.4",
             "prms_out_file": outdir + "nhru_hru_lateral_flow.csv",
             "georef": {
-                "map": '/work/markstro/intern_demo/GIS_Data/hrus_all_conus_geo.shp',
+                "map": hru_dir,
                 "type": 'Polygon',
                 "dimid":"hruid",
                 "attribute": 'nhm_id'
@@ -61,7 +65,7 @@ data = {
             "conversion_factor": "0.0283168",
             "prms_out_file": outdir + "nsegment_seg_outflow.csv",
             "georef": {
-                "map": '/work/markstro/intern_demo/GIS_Data/segs_all_conus_geo.shp',
+                "map": seg_dir,
                 "type": 'LineString',
                 "dimid":"segid",
                 "attribute": 'nhm_seg'
@@ -70,7 +74,7 @@ data = {
     },
     "feature_georef": {
         "hru_lat":{
-            "file":"/work/markstro/operat/ncdf_samples/nhm_animation_ncdf/prms_files/hru_lat.txt",
+            "file": indir + "hru_lat.txt",
             "dimid":"hruid",
             "long_name": "Latitude of HRU centroid",
             "units":"degrees_north",
@@ -78,7 +82,7 @@ data = {
             "fill_value": "9.969209968386869e+36"
         },
         "hru_lon":{
-            "file":"/work/markstro/operat/ncdf_samples/nhm_animation_ncdf/prms_files/hru_lon.txt",
+            "file": indir + "hru_lon.txt",
             "dimid":"hruid",
             "long_name": "Longitude of HRU centroid",
             "units":"degrees_east",
@@ -86,7 +90,7 @@ data = {
             "fill_value": "9.969209968386869e+36"
         },
         "seg_lat":{
-            "file": "/work/markstro/operat/ncdf_samples/nhm_animation_ncdf/prms_files/lat_seg.txt",
+            "file": indir + "lat_seg.txt",
             "dimid":"segid",
             "long_name": "Latitude of stream segment centroid",
             "units":"degrees_north",
@@ -94,7 +98,7 @@ data = {
             "fill_value": "9.969209968386869e+36"
         },
         "seg_lon":{
-            "file": "/work/markstro/operat/ncdf_samples/nhm_animation_ncdf/prms_files/lon_seg.txt",
+            "file": indir + "lon_seg.txt",
             "dimid":"segid",
             "long_name": "Longitude of stream segment centroid",
             "units":"degrees_east",

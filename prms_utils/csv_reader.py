@@ -68,7 +68,7 @@ def read_output(csvfn):
         for ii in range(1,len(header)):
             indx[ii-1] = int(header[ii])
 
-        print(indx)
+        # print(indx)
 
         # Read the CSV file values, line-by-line, column-by-column
         ii = 0
@@ -87,11 +87,13 @@ def read_output(csvfn):
                     # Get the base date (ie date of first time step) from the first row of values
                     if ii == 0:
                         base_date = tok
-                    print(tok)
+                    else:
+                        end_date = tok
+                    # print(tok)
 
                 jj = jj + 1
             ii = ii + 1
-    return nts, nfeat, base_date, vals
+    return nts, nfeat, base_date, end_date, vals
 
 def read_cbh(cbhfn):
     # figure out the number of features (ncol - 1)
