@@ -1,11 +1,10 @@
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
 import datetime
 from prms_utils import ncf_reader
+import sys
 
-dir = '/work/markstro/operat/docker_test/NHM-PRMS_CONUS/sandbox/'
-nc_fn = dir + 'new.nc'
 
-if __name__ == '__main__':
+def main(dir, nc_fn):
     var_names, base_date, nts, vals = ncf_reader.read(nc_fn)
 
     # Write CBH files.
@@ -14,6 +13,7 @@ if __name__ == '__main__':
         nfeats = len(v[0])
         fn2 = dir + name + ".cbh"
         current_date = base_date
+        print('writing ' + fn2)
         with open(fn2, 'w') as fp:
             fp.write('Written by ncf2cbh.py\n')
             fp.write(name + ' ' + str(nfeats) + '\n')
@@ -34,3 +34,20 @@ if __name__ == '__main__':
                     fp.write(' ' + str(v[ii,jj]))
                 fp.write('\n')
                 current_date += datetime.timedelta(days=1)
+
+
+if __name__ == '__main__':
+    dir = '/work/markstro/operat/docker_test/NHM-PRMS_CONUS/sandbox/'
+    dir = '/work/markstro/operat/docker_test/NHM-PRMS_CONUS/input/'
+
+
+    argc = len(sys.argv) - 1
+    # print(argc)
+
+    if argc == 1:
+        print('setting dir = ' + sys.argv[1])
+        dir = sys.argv[1]
+
+    nc_fn = dir + 'new.nc'
+
+    main(dir, nc_fn)

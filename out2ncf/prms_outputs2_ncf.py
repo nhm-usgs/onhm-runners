@@ -64,7 +64,7 @@ def main(dir):
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
-        nts, nfeats, base_date, vals = csv_reader.read_output(csv_fn)
+        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
 
         conversion_factor = float(cntl["output_variables"][var_name]["conversion_factor"])
         iis = len(vals)
@@ -90,8 +90,10 @@ def main(dir):
         nsegments = len(seg_lat_vals)
 
 # write the ncf file
-    print('writing netcdf file ' + cntl['ncf_file_name'])
-    ncf = Dataset(cntl['ncf_file_name'], 'w', format='NETCDF4_CLASSIC')
+    ofn = str(dir) + "/output/" + str(end_date) + "_out.nc"
+    # print('writing netcdf file ' + cntl['ncf_file_name'])
+    print('writing netcdf file ' + ofn)
+    ncf = Dataset(ofn, 'w', format='NETCDF4_CLASSIC')
 
     # Write dimensions block
     if nhrus > 0:
@@ -157,7 +159,7 @@ def main(dir):
 if __name__ == '__main__':
     dir = "/work/markstro/operat/docker_test/NHM-PRMS_CONUS"
     argc = len(sys.argv) - 1
-    print(argc)
+    # print(argc)
 
     if argc == 1:
         print('setting dir = ' + sys.argv[1])

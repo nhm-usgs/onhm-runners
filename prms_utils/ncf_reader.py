@@ -1,4 +1,5 @@
 from netCDF4 import Dataset
+from netCDF4 import num2date
 import datetime
 
 
@@ -19,11 +20,19 @@ def read(nc_fn):
 
     time = nc_fid.variables['time'][:]
     nts = len(time)
-    print(time, nts)
+    # print(time, nts)
 
-    # TODO Need to get base_date_str from the ncf file. It's not there now
-    base_date_str = "2019-05-05"
-    tok = base_date_str.split('-')
+    time_var = nc_fid.variables['time']
+    # print(str(time_var))
+    dtime = num2date(time_var[:],time_var.units)
+    # print("dtime = " + str(dtime[0]))
+
+    base_date_str = str(dtime[0])
+    print('base_date_str ' + base_date_str)
+    # base_date_str = "2019-05-05"
+    tok = base_date_str.split(' ')
+    ymd = tok[0]
+    tok = ymd.split('-')
     base_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
     print(base_date)
 
