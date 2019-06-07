@@ -36,7 +36,7 @@ def make_init_file(st, et, prms_path, work_dir, init_flag, save_flag, control_fi
 
 def main():
     work_dir = '/var/lib/nhm/ofp/Data'
-    prms_path = '/usr/local/src/prms/prms'
+    prms_path = '/usr/local/src/prms/prms/prms'
     control_file = './NHM-PRMS.control'
 
     # Test 1 - run straight through with no init or save
