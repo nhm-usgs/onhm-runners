@@ -8,7 +8,8 @@ import json
 import datetime
 import getpass
 from netCDF4 import Dataset
-import sys, getopt
+import os
+import sys
 
 
 def read_feature_georef(cntl, name):
@@ -157,7 +158,7 @@ def main(dir):
 
 
 if __name__ == '__main__':
-    dir = "/work/markstro/operat/docker_test/NHM-PRMS_CONUS"
+    dir = "/var/lib/nhm/NHM-PRMS_CONUS"
     argc = len(sys.argv) - 1
     # print(argc)
 
@@ -165,4 +166,5 @@ if __name__ == '__main__':
         print('setting dir = ' + sys.argv[1])
         dir = sys.argv[1]
 
+    os.chdir(dir)
     main(dir)
