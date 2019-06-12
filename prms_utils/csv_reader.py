@@ -4,10 +4,10 @@ import csv
 def read(csvfn):
     # figure out the number of features (ncol - 1)
     # figure out the number of timesteps (nrow -1)
-    with open(csvfn, 'rb') as csvfile:
+    with open(csvfn, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
 
-        header = spamreader.next()
+        header = next(spamreader)
         nfeat = len(header) - 6
 
         ii = 0
@@ -16,11 +16,11 @@ def read(csvfn):
         nts = ii
 
     vals = np.zeros(shape=(nts,nfeat))
-    with open(csvfn, 'rb') as csvfile:
+    with open(csvfn, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
 
         # Read the header line
-        header = spamreader.next()
+        header = next(spamreader)
 
         # Read the CSV file values, line-by-line, column-by-column
         ii = 0
@@ -45,10 +45,10 @@ def read(csvfn):
 def read_output(csvfn):
     # figure out the number of features (ncol - 1)
     # figure out the number of timesteps (nrow -1)
-    with open(csvfn, 'rb') as csvfile:
+    with open(csvfn, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
 
-        header = spamreader.next()
+        header = next(spamreader)
         nfeat = len(header) - 1
 
         ii = 0
@@ -58,15 +58,15 @@ def read_output(csvfn):
 
     vals = np.zeros(shape=(nts,nfeat))
     indx = np.zeros(shape=nfeat, dtype=int)
-    with open(csvfn, 'rb') as csvfile:
+    with open(csvfn, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
 
         # Read the header line
-        header = spamreader.next()
-        for ii in xrange(1,len(header)):
+        header = next(spamreader)
+        for ii in range(1,len(header)):
             indx[ii-1] = int(header[ii])
 
-        print indx
+        print(indx)
 
         # Read the CSV file values, line-by-line, column-by-column
         ii = 0
@@ -80,12 +80,12 @@ def read_output(csvfn):
                         vals[ii][indx[kk]-1] = float(tok)
                         kk = kk + 1
                     except:
-                        print 'read_output: ', str(tok), str(ii), str(kk), str(indx[kk]-1)
+                        print('read_output: ', str(tok), str(ii), str(kk), str(indx[kk]-1))
                 else:
                     # Get the base date (ie date of first time step) from the first row of values
                     if ii == 0:
                         base_date = tok
-                    print tok
+                    print(tok)
 
                 jj = jj + 1
             ii = ii + 1
@@ -96,10 +96,10 @@ def read_output(csvfn):
 def read_cbh(csvfn):
     # figure out the number of features (ncol - 1)
     # figure out the number of timesteps (nrow -1)
-    with open(csvfn, 'rb') as csvfile:
+    with open(csvfn, 'r') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=' ')
 
-        header = spamreader.next()
+        header = next(spamreader)
         nfeat = len(header) - 6
 
         ii = 0
@@ -108,17 +108,17 @@ def read_cbh(csvfn):
         nts = ii + 1
 
     vals = np.zeros(shape=(nts,nfeat))
-    with open(csvfn, 'rb') as csvfile:
+    with open(csvfn, 'r') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=' ')
 
         # Read the CSV file values, line-by-line, column-by-column
         ii = 0
         for row in spamreader:
-            for kk in xrange(0,nfeat):
+            for kk in range(0,nfeat):
                 try:
                     vals[ii][kk] = float(row[kk+6])
                 except:
-                    print 'read_output: ', row[0], row[1], row[2]
+                    print('read_output: ', row[0], row[1], row[2])
 
                 # Get the base date (ie date of first time step) from the first row of values
                 if ii == 0:
@@ -130,4 +130,4 @@ def read_cbh(csvfn):
 
 # tester
 if __name__ == '__main__':
-    print read('/work/markstro/intern_demo/ModelInput/skunk_humid.csv')
+    print(read('/work/markstro/intern_demo/ModelInput/skunk_humid.csv'))
