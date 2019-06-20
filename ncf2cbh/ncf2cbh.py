@@ -37,9 +37,7 @@ def main(dir, nc_fn):
 
 
 if __name__ == '__main__':
-    dir = '/work/markstro/operat/docker_test/NHM-PRMS_CONUS/sandbox/'
-    dir = '/work/markstro/operat/docker_test/NHM-PRMS_CONUS/input/'
-
+    work_dir = '/var/lib/nhm/NHM-PRMS_CONUS/'
 
     argc = len(sys.argv) - 1
     # print(argc)
