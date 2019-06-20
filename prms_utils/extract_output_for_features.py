@@ -49,7 +49,7 @@ def csv_reader(fn, num_rows, num_cols):
         csv_reader = csv.reader(csv_file, delimiter=',')
         ii = 0
         for row in csv_reader:
-            for jj in xrange(num_segs):
+            for jj in range(num_segs):
                 v1[ii,jj] = float(row[jj])
             ii += 1
 
@@ -64,24 +64,24 @@ if __name__ == '__main__':
     dates_fn = 'dates.txt'
     dates = np.loadtxt(dir + dates_fn, dtype=str)
 
-    for ii in xrange(len(var_list)):
+    for ii in range(len(var_list)):
         fn = dir + var_list[ii] + '.txt'
-        print "reading ", fn
+        print("reading ", fn)
 
         num_segs = 56460
         v1 = csv_reader(fn, len(dates), num_segs)
-        print v1
+        print(v1)
 
         vals = np.zeros(shape=[len(dates), len(nhm_seg)])
-        for jj in xrange(len(dates)):
-            for kk in xrange(len(nhm_seg)):
+        for jj in range(len(dates)):
+            for kk in range(len(nhm_seg)):
                 # vals[jj,kk] = v1[nhm_seg[kk] - 1,jj]
                 vals[jj, kk] = v1[jj, nhm_seg[kk] - 1]
 
         # Write the output cvs file
         fn2 = dir + var_list[ii] + '.csv'
 
-        print "writing ", fn2
+        print("writing ", fn2)
         fp = open(fn2, mode='w')
 
         fp.write("date")
@@ -89,9 +89,9 @@ if __name__ == '__main__':
             fp.write("," + str(foo))
         fp.write('\n')
 
-        for jj in xrange(len(dates)):
+        for jj in range(len(dates)):
             fp.write(dates[jj])
-            for kk in xrange(len(nhm_seg)):
+            for kk in range(len(nhm_seg)):
                 fp.write(',' + str(vals[jj,kk]))
 
             fp.write('\n')

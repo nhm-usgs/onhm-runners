@@ -10,7 +10,7 @@ def mahalanobis_dist(x, y):
     diff_xy = np.transpose([x_diff, y_diff])
 
     md = []
-    for i in xrange(len(diff_xy)):
+    for i in range(len(diff_xy)):
         md.append(np.sqrt(np.dot(np.dot(np.transpose(diff_xy[i]), inv_covariance_xy), diff_xy[i])))
     return md
 
@@ -20,7 +20,7 @@ def md_remove_outliers(x, y, adj):
     md = mahalanobis_dist(x, y)
     threshold = np.mean(md) * adj  # adjust 1.5 accordingly
     nx, ny, outliers = [], [], []
-    for i in xrange(len(md)):
+    for i in range(len(md)):
         if md[i] <= threshold:
             nx.append(x[i])
             ny.append(y[i])

@@ -51,8 +51,8 @@ def main():
     nts, nhrus, base_date, foo = csv_reader.read_output(in_dir + '/' + 'nhru_soil_moist_short.csv')
 #    nts, nhrus, base_date, foo = csv_reader.read_output(in_dir + '/' + 'nhru_soil_moist.csv')
     soil_moist_vals = [num * 25.4 for num in foo] # convert inches to mm
-    print nts, nhrus, base_date
-    print soil_moist_vals[0][nhrus-1], soil_moist_vals[nts-1][0], soil_moist_vals[nts-1][nhrus-1]
+    print(nts, nhrus, base_date)
+    print(soil_moist_vals[0][nhrus-1], soil_moist_vals[nts-1][0], soil_moist_vals[nts-1][nhrus-1])
 
     # runoff_vals[nts][nhrus]
     nts1, nhrus1, base_date1, foo = csv_reader.read_output(in_dir + '/' + 'nhru_hru_lateral_flow_short.csv')
@@ -68,8 +68,8 @@ def main():
         raise ValueError('base date not the same in nhru_soil_moist.csv and nhru_hru_lateral_flow.csv')
 
     runoff_vals = [num * 25.4 for num in foo] # convert inches to mm
-    print nts, nhrus, base_date
-    print runoff_vals[0][nhrus-1], runoff_vals[nts-1][0], runoff_vals[nts-1][nhrus-1]
+    print(nts, nhrus, base_date)
+    print(runoff_vals[0][nhrus-1], runoff_vals[nts-1][0], runoff_vals[nts-1][nhrus-1])
 
     # seg_outflow_vals[nts][nsegments]
     nts2, nsegments, base_date2, foo = csv_reader.read_output(in_dir + '/' + 'nsegment_seg_outflow_short.csv')
@@ -82,12 +82,12 @@ def main():
         raise ValueError('base date not the same in nhru_soil_moist.csv and nsegment_seg_outflow.csv')
 
     seg_outflow_vals = [num * 0.0283168 for num in foo] # convert cfs to cms
-    print nts, nsegments, base_date
-    print seg_outflow_vals[0][nsegments - 1], seg_outflow_vals[nts - 1][0], seg_outflow_vals[nts - 1][nsegments - 1]
+    print(nts, nsegments, base_date)
+    print(seg_outflow_vals[0][nsegments - 1], seg_outflow_vals[nts - 1][0], seg_outflow_vals[nts - 1][nsegments - 1])
 
     # hru_lat
     hru_lat_vals = np.zeros(shape=(nhrus))
-    with open(in_dir + '/' + 'hru_lat.txt', 'rb') as csvfile:
+    with open(in_dir + '/' + 'hru_lat.txt', 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -96,7 +96,7 @@ def main():
 
     # hru_lon
     hru_lon_vals = np.zeros(shape=(nhrus))
-    with open(in_dir + '/' + 'hru_lon.txt', 'rb') as csvfile:
+    with open(in_dir + '/' + 'hru_lon.txt', 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -105,7 +105,7 @@ def main():
 
     # seg_lat
     seg_lat_vals = np.zeros(shape=(nsegments))
-    with open(in_dir + '/' + 'lat_seg.txt', 'rb') as csvfile:
+    with open(in_dir + '/' + 'lat_seg.txt', 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -114,7 +114,7 @@ def main():
 
     # seg_lon
     seg_lon_vals = np.zeros(shape=(nsegments))
-    with open(in_dir + '/' + 'lon_seg.txt', 'rb') as csvfile:
+    with open(in_dir + '/' + 'lon_seg.txt', 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -122,7 +122,7 @@ def main():
             ii = ii + 1
 
 # write the cdl file
-    print 'writing cdl file ' + cdl_file_name
+    print('writing cdl file ' + cdl_file_name)
     cdl_file = open(cdl_file_name, 'w')
     cdl_file.write('netcdf ' + nc_name + ' {' + '\n')
 
@@ -208,57 +208,57 @@ def main():
 # time
     cdl_file.write('time =\n')
     cdl_file.write('  0')
-    for ii in xrange(1, nts):
+    for ii in range(1, nts):
         cdl_file.write(', ' + str(ii))
     cdl_file.write(';\n\n')
 
 # hruid
     cdl_file.write('hruid =\n')
     cdl_file.write('  1')
-    for ii in xrange(2, nhrus):
+    for ii in range(2, nhrus):
         cdl_file.write(', ' + str(ii))
     cdl_file.write(';\n\n')
 
 # segid
     cdl_file.write('segid =\n')
     cdl_file.write('  1')
-    for ii in xrange(2, nsegments):
+    for ii in range(2, nsegments):
         cdl_file.write(', ' + str(ii))
     cdl_file.write(';\n\n')
 
 # latitude
     cdl_file.write('hru_lat =\n')
     cdl_file.write('  ' + str('%.6f' % hru_lat_vals[0]))
-    for ii in xrange(1, nhrus):
+    for ii in range(1, nhrus):
         cdl_file.write(', ' + str('%.6f' % hru_lat_vals[ii]))
     cdl_file.write(';\n\n')
 
 # longitude
     cdl_file.write('hru_lon =\n')
     cdl_file.write('  ' + str('%.6f' % hru_lon_vals[0]))
-    for ii in xrange(1, nhrus):
+    for ii in range(1, nhrus):
         cdl_file.write(', ' + str('%.6f' % hru_lon_vals[ii]))
     cdl_file.write(';\n\n')
 
 # latitude
     cdl_file.write('seg_lat =\n')
     cdl_file.write('  ' + str('%.6f' % seg_lat_vals[0]))
-    for ii in xrange(1, nsegments):
+    for ii in range(1, nsegments):
         cdl_file.write(', ' + str('%.6f' % seg_lat_vals[ii]))
     cdl_file.write(';\n\n')
 
 # longitude
     cdl_file.write('seg_lon =\n')
     cdl_file.write('  ' + str('%.6f' % seg_lon_vals[0]))
-    for ii in xrange(1, nsegments):
+    for ii in range(1, nsegments):
         cdl_file.write(', ' + str('%.6f' % seg_lon_vals[ii]))
     cdl_file.write(';\n\n')
 
 # soil_moist
     cdl_file.write('soil_moist =\n')
-    for ii in xrange(0, nts):
+    for ii in range(0, nts):
         cdl_file.write('  ' + str('%.1f' % soil_moist_vals[ii][0]))
-        for jj in xrange(1, nhrus):
+        for jj in range(1, nhrus):
             cdl_file.write(', ' + str('%.1f' % soil_moist_vals[ii][jj]))
         if ii == nts-1:
             cdl_file.write('\n')
@@ -268,9 +268,9 @@ def main():
 
 # runoff
     cdl_file.write('lateral_flow =\n')
-    for ii in xrange(0, nts):
+    for ii in range(0, nts):
         cdl_file.write('  ' + str('%.1f' % runoff_vals[ii][0]))
-        for jj in xrange(1, nhrus):
+        for jj in range(1, nhrus):
             cdl_file.write(', ' + str('%.1f' % runoff_vals[ii][jj]))
         if ii == nts - 1:
             cdl_file.write('\n')
@@ -280,9 +280,9 @@ def main():
 
 # stream_flow
     cdl_file.write('stream_flow =\n')
-    for ii in xrange(0, nts):
+    for ii in range(0, nts):
         cdl_file.write('  ' + str('%.1f' % seg_outflow_vals[ii][0]))
-        for jj in xrange(1, nsegments):
+        for jj in range(1, nsegments):
             cdl_file.write(', ' + str('%.1f' % seg_outflow_vals[ii][jj]))
         if ii == nts - 1:
             cdl_file.write('\n')

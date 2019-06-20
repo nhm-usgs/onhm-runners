@@ -1,5 +1,5 @@
-import numpy as np
-import datetime
+# import numpy as np
+# import datetime
 
 
 class paramfile:
@@ -16,7 +16,6 @@ class paramfile:
         fp.readline()
         delim = fp.readline()
 
-
         while delim != "** Parameters **":
             dim = fp.readline().strip()
             size = int(fp.readline().strip())
@@ -28,12 +27,12 @@ class paramfile:
             param = fp.readline().strip()
             num_dim = int(fp.readline().strip())
             d = []
-            for ii in xrange(num_dim):
+            for ii in range(num_dim):
                 d.append(fp.readline().strip())
             num_vals = int(fp.readline().strip())
             type = int(fp.readline().strip())
             v = []
-            for ii in xrange(num_vals):
+            for ii in range(num_vals):
                 if type == 1:
                     v.append(int(fp.readline().strip()))
                 elif type == 2:

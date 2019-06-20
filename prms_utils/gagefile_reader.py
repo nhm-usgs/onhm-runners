@@ -2,6 +2,7 @@ import numpy as np
 import csv
 import datetime
 
+
 def read(fn):
     num_lines = sum(1 for line in open(fn)) - 1
 

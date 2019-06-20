@@ -1,5 +1,7 @@
 import datetime
 import urllib
+
+
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -18,9 +20,10 @@ def download_nwis_stream_flow(gage_id, fn):
     url = 'http://waterservices.usgs.gov/nwis/dv?site=' + gage_id +\
           '&parameterCd=' + param + '&statCd=' + stat + '&startDt=' + start + '&endDt=' + end
 
-    print url
-    print fn
+    print(url)
+    print(fn)
     urllib.urlretrieve(url, fn)
+
 
 def parse_stream_flow_xml(wd, gi, quals, ns):
     dt = []

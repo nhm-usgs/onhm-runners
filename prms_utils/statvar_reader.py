@@ -12,7 +12,7 @@ def read(svfn):
     var_indexes = np.empty([var_count], dtype=int)
 
 # read header
-    for ii in xrange(0, var_count):
+    for ii in range(0, var_count):
         line = fp.readline()
         split = line.split()
         var_names[ii] = split[0]
@@ -29,7 +29,7 @@ def read(svfn):
     fp.close()
     fp = open(svfn, "r")
     fp.readline()
-    for ii in xrange(0, var_count):
+    for ii in range(0, var_count):
         fp.readline()
 
 # read values
@@ -39,7 +39,7 @@ def read(svfn):
     c = var_count
     vals = np.empty(shape=(r,c), dtype=float)
 
-    for ii in xrange(0, count):
+    for ii in range(0, count):
         line = fp.readline().strip()
         # print(repr(line))
         sp = line.split()
@@ -48,7 +48,7 @@ def read(svfn):
         # print "statvar_reader date = ", foo
         dates[ii] = foo
 
-        for jj in xrange(0, var_count):
+        for jj in range(0, var_count):
             # Fortran will write "-1.#IND00" into the statvar file and maybe some other
             # string if the model breaks. I don't want these reader to choke if it hits
             # something other than a float value. The user's should get some kind of
@@ -57,8 +57,8 @@ def read(svfn):
                 vals[ii, jj] = float(sp[7 + jj])
             except ValueError:
                 vals[ii, jj] = np.NaN
-                print "value error in " + svfn
-                print "   " + line
+                print("value error in " + svfn)
+                print("   " + line)
 
     fp.close()
     return var_names, var_indexes, dates, vals

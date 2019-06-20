@@ -9,18 +9,26 @@ import datetime
 import getpass
 from netCDF4 import Dataset
 import os
+<<<<<<< HEAD
 
 dir = "/var/lib/nhm/"
 json_file = dir + "/" + "variable_info.json"
+=======
+import sys
+>>>>>>> develop
 
 
 def read_feature_georef(cntl, name):
     fn1 = cntl["feature_georef"][name]["file"]
+<<<<<<< HEAD
     print(fn1)
+=======
+    print (fn1)
+>>>>>>> develop
 
     nfeat = sum(1 for line in open(fn1))
     vals = np.zeros(shape=(nfeat))
-    with open(fn1, 'rb') as csvfile:
+    with open(fn1, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -52,10 +60,15 @@ def write_timeseries_values(cntl, ncf, name, vals, nc_var):
         nc_var[ii, :] = vals[ii]
 
 
+<<<<<<< HEAD
 def main():
     cwd = os.getcwd()
     print('prms_output2_ncf: cwd = ' + cwd)
 
+=======
+def main(dir):
+    json_file = str(dir) + "/" + "variable_info.json"
+>>>>>>> develop
     with open(json_file, "r") as read_file:
         cntl = json.load(read_file)
 
@@ -69,7 +82,7 @@ def main():
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
-        nts, nfeats, base_date, vals = csv_reader.read_output(csv_fn)
+        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
 
         conversion_factor = float(cntl["output_variables"][var_name]["conversion_factor"])
         iis = len(vals)
@@ -95,8 +108,15 @@ def main():
         nsegments = len(seg_lat_vals)
 
 # write the ncf file
+<<<<<<< HEAD
     print('writing netcdf file ' + cntl['ncf_file_name'])
     ncf = Dataset(cntl['ncf_file_name'], 'w', format='NETCDF4_CLASSIC')
+=======
+    ofn = str(dir) + "/output/" + str(end_date) + "_out.nc"
+    # print('writing netcdf file ' + cntl['ncf_file_name'])
+    print('writing netcdf file ' + ofn)
+    ncf = Dataset(ofn, 'w', format='NETCDF4_CLASSIC')
+>>>>>>> develop
 
     # Write dimensions block
     if nhrus > 0:
@@ -134,7 +154,7 @@ def main():
 
     ncf.conventions = "CF-1.8"
     ncf.featureType = "timeSeries"
-    ncf.history = str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2.py'
+    ncf.history = str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2_cdl.py'
 
     # Write data
     time_idx[:] = np.arange(0, nts, 1)
@@ -160,4 +180,13 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    dir = "/var/lib/nhm/NHM-PRMS_CONUS"
+    argc = len(sys.argv) - 1
+    # print(argc)
+
+    if argc == 1:
+        print('setting dir = ' + sys.argv[1])
+        dir = sys.argv[1]
+
+    os.chdir(dir)
+    main(dir)

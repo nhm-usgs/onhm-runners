@@ -1,6 +1,9 @@
 # Markstrom
 # Wed Mar 13 09:43:53 MDT 2019
 
+# This is broken and shouldn't be run anymore. I keep it as an example of writing a cdl file.
+# There might be better examples, but I'm not sure why cdl files need to be written anymore.
+
 #import os
 from prms_utils import csv_reader
 import numpy as np
@@ -47,15 +50,15 @@ cdl_file_name = out_dir + '/nhm_cbh_example_short.cdl'
 
 def main():
 # Read the PRMS CBH
-    nts, nhrus, base_date, foo = csv_reader.read_cbh(in_dir + '/' + 'prcp_short.csv')
+    nts, nhrus, base_date, foo = csv_reader.read_headless_cbh(in_dir + '/' + 'prcp_short.csv')
     prcp_vals = [num * 25.4 for num in foo] # convert inches to mm
-    print nts, nhrus, base_date
-    print prcp_vals[0][nhrus-1], prcp_vals[nts-1][0], prcp_vals[nts-1][nhrus-1]
+    print(nts, nhrus, base_date)
+    print(prcp_vals[0][nhrus-1], prcp_vals[nts-1][0], prcp_vals[nts-1][nhrus-1])
 
-    nts1, nhrus1, base_date1, foo = csv_reader.read_cbh(in_dir + '/' + 'tmax_short.csv')
+    nts1, nhrus1, base_date1, foo = csv_reader.read_headless_cbh(in_dir + '/' + 'tmax_short.csv')
     tmax_vals = [(num -32.0) * 5.0/9.0 for num in foo] # convert F to C
-    print nts, nhrus, base_date
-    print tmax_vals[0][nhrus-1], tmax_vals[nts-1][0], tmax_vals[nts-1][nhrus-1]
+    print(nts, nhrus, base_date)
+    print(tmax_vals[0][nhrus-1], tmax_vals[nts-1][0], tmax_vals[nts-1][nhrus-1])
 
     if nts != nts1:
         raise ValueError('number of timesteps not the same in prcp_short.csv and tmax_short.csv')
@@ -66,10 +69,10 @@ def main():
     if base_date != base_date1:
         raise ValueError('base date not the same in prcp_short.csv and tmax_short.csv')
 
-    nts2, nhrus2, base_date2, foo = csv_reader.read_cbh(in_dir + '/' + 'tmin_short.csv')
+    nts2, nhrus2, base_date2, foo = csv_reader.read_headless_cbh(in_dir + '/' + 'tmin_short.csv')
     tmin_vals = [(num - 32.0) * 5.0 / 9.0 for num in foo]  # convert F to C
-    print nts2, nhrus2, base_date2
-    print tmin_vals[0][nhrus - 1], tmin_vals[nts - 1][0], tmin_vals[nts - 1][nhrus - 1]
+    print(nts2, nhrus2, base_date2)
+    print(tmin_vals[0][nhrus - 1], tmin_vals[nts - 1][0], tmin_vals[nts - 1][nhrus - 1])
     if nts != nts2:
         raise ValueError('number of timesteps not the same in prcp_short.csv and tmin_short.csv')
 
@@ -81,7 +84,7 @@ def main():
 
     # hru_lat
     hru_lat_vals = np.zeros(shape=(nhrus))
-    with open(in_dir + '/' + 'hru_lat.txt', 'rb') as csvfile:
+    with open(in_dir + '/' + 'hru_lat.txt', 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -90,7 +93,7 @@ def main():
 
     # hru_lon
     hru_lon_vals = np.zeros(shape=(nhrus))
-    with open(in_dir + '/' + 'hru_lon.txt', 'rb') as csvfile:
+    with open(in_dir + '/' + 'hru_lon.txt', 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -98,7 +101,7 @@ def main():
             ii = ii + 1
 
 # write the cdl file
-    print 'writing cdl file ' + cdl_file_name
+    print('writing cdl file ' + cdl_file_name)
     cdl_file = open(cdl_file_name, 'w')
     cdl_file.write('netcdf ' + nc_name + ' {' + '\n')
 
@@ -160,36 +163,36 @@ def main():
 # time
     cdl_file.write('time =\n')
     cdl_file.write('  0')
-    for ii in xrange(1, nts):
+    for ii in range(1, nts):
         cdl_file.write(', ' + str(ii))
     cdl_file.write(';\n\n')
 
 # hruid
     cdl_file.write('hruid =\n')
     cdl_file.write('  1')
-    for ii in xrange(2, nhrus):
+    for ii in range(2, nhrus):
         cdl_file.write(', ' + str(ii))
     cdl_file.write(';\n\n')
 
 # latitude
     cdl_file.write('hru_lat =\n')
     cdl_file.write('  ' + str('%.6f' % hru_lat_vals[0]))
-    for ii in xrange(1, nhrus):
+    for ii in range(1, nhrus):
         cdl_file.write(', ' + str('%.6f' % hru_lat_vals[ii]))
     cdl_file.write(';\n\n')
 
 # longitude
     cdl_file.write('hru_lon =\n')
     cdl_file.write('  ' + str('%.6f' % hru_lon_vals[0]))
-    for ii in xrange(1, nhrus):
+    for ii in range(1, nhrus):
         cdl_file.write(', ' + str('%.6f' % hru_lon_vals[ii]))
     cdl_file.write(';\n\n')
 
 # soil_moist
     cdl_file.write('prcp =\n')
-    for ii in xrange(0, nts):
+    for ii in range(0, nts):
         cdl_file.write('  ' + str('%.1f' % prcp_vals[ii][0]))
-        for jj in xrange(1, nhrus):
+        for jj in range(1, nhrus):
             cdl_file.write(', ' + str('%.1f' % prcp_vals[ii][jj]))
         if ii == nts-1:
             cdl_file.write('\n')
@@ -199,9 +202,9 @@ def main():
 
 # runoff
     cdl_file.write('tmax =\n')
-    for ii in xrange(0, nts):
+    for ii in range(0, nts):
         cdl_file.write('  ' + str('%.1f' % tmax_vals[ii][0]))
-        for jj in xrange(1, nhrus):
+        for jj in range(1, nhrus):
             cdl_file.write(', ' + str('%.1f' % tmax_vals[ii][jj]))
         if ii == nts - 1:
             cdl_file.write('\n')
@@ -211,9 +214,9 @@ def main():
 
 # stream_flow
     cdl_file.write('tmin =\n')
-    for ii in xrange(0, nts):
+    for ii in range(0, nts):
         cdl_file.write('  ' + str('%.1f' % tmin_vals[ii][0]))
-        for jj in xrange(1, nhrus):
+        for jj in range(1, nhrus):
             cdl_file.write(', ' + str('%.1f' % tmin_vals[ii][jj]))
         if ii == nts - 1:
             cdl_file.write('\n')
@@ -226,12 +229,12 @@ def main():
     cdl_file.close()
 
 # at this point, missing_val_set contains the names of all values because nothing has been removed yet.
-#     print '1', missing_val_set
+#     print('1', missing_val_set)
 
 
 # This writes the netcdf files.
 #     for map_name, f1, in shapes.items():
-#         print map_name, f1
+#         print(map_name, f1)
 #         prms_inputs_noglob.prms_inputs_noglob(map_name, f1, model_output_file_names, in_dir,
 #                                               parameter_file_name_for_dim_size, out_dir, nc_name, tz_code,
 #                                               info_file_name, shape_dir, missing_val_set, all_values_dict, nts,
