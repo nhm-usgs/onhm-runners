@@ -47,7 +47,7 @@ def read(nc_fn):
     return var_names, base_date, nts, vals
 
 def main(dir, nc_fn):
-    var_names, base_date, nts, vals = ncf_reader.read(nc_fn)
+    var_names, base_date, nts, vals = read(nc_fn)
 
     # Write CBH files.
     for name in var_names:
