@@ -1,7 +1,7 @@
 # Markstrom
 # Wed Apr 09 09:43:53 MDT 2019
 
-from prms_utils import csv_reader
+#from prms_utils import csv_reader
 import numpy as np
 import csv
 import json
@@ -10,6 +10,60 @@ import getpass
 from netCDF4 import Dataset
 import os
 import sys
+
+
+# This function copied from onhm-runners/prms_utils/csv_reader.py
+# Read a PRMS "output" csv. For these files, there is a remapping in the header line that tells the order of the columns
+def read_output(csvfn):
+    # figure out the number of features (ncol - 1)
+    # figure out the number of timesteps (nrow -1)
+    with open(csvfn, 'r') as csvfile:
+        spamreader = csv.reader(csvfile)
+
+        header = next(spamreader)
+        nfeat = len(header) - 1
+
+        ii = 0
+        for row in spamreader:
+            ii = ii + 1
+        nts = ii
+
+    vals = np.zeros(shape=(nts,nfeat))
+    indx = np.zeros(shape=nfeat, dtype=int)
+    with open(csvfn, 'r') as csvfile:
+        spamreader = csv.reader(csvfile)
+
+        # Read the header line
+        header = next(spamreader)
+        for ii in range(1,len(header)):
+            indx[ii-1] = int(header[ii])
+
+        # print(indx)
+
+        # Read the CSV file values, line-by-line, column-by-column
+        ii = 0
+        for row in spamreader:
+            jj = 0
+            kk = 0
+            for tok in row:
+                # Now skip the date/time fields and put the values into the 2D array
+                if jj > 0:
+                    try:
+                        vals[ii][indx[kk]-1] = float(tok)
+                        kk = kk + 1
+                    except:
+                        print('read_output: ', str(tok), str(ii), str(kk), str(indx[kk]-1))
+                else:
+                    # Get the base date (ie date of first time step) from the first row of values
+                    if ii == 0:
+                        base_date = tok
+                    else:
+                        end_date = tok
+                    # print(tok)
+
+                jj = jj + 1
+            ii = ii + 1
+    return nts, nfeat, base_date, end_date, vals
 
 
 def read_feature_georef(cntl, name):
@@ -65,7 +119,9 @@ def main(dir):
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
-        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
+#        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
+#        print("####### pwd = " + os.getcwd())
+        nts, nfeats, base_date, end_date, vals = read_output(csv_fn)
 
         conversion_factor = float(cntl["output_variables"][var_name]["conversion_factor"])
         iis = len(vals)
