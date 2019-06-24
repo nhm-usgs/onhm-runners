@@ -1,7 +1,6 @@
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
 from netCDF4 import num2date
 import datetime
-from prms_utils import ncf_reader
 import sys
 
 def read(nc_fn):
