@@ -88,7 +88,7 @@ if __name__ == '__main__':
         print('setting dir = ' + sys.argv[1])
         dir = sys.argv[1]
     else:
-        dir='/var/lib/nhm/ofp/Ouput/'
+        dir='/var/lib/nhm/ofp/Output/'
 
     nc_fn = dir + 'climate_'+str(datetime.datetime.now().strftime('%Y_%m_%d'))+'.nc'
 
