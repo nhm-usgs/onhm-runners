@@ -12,10 +12,14 @@ import glob
 import datetime
 
 
+RESTARTDIR = 'restart/'
+INDIR = 'in/'
+OUTDIR = 'out/'
+
 # Check the restart directory for restart files.
 # Return the date of the latest one.
 def last_simulation_date(dir):
-    foo = glob.glob(dir + 'restart/*.restart')
+    foo = glob.glob(dir + RESTARTDIR + '*.restart')
 
     restart_dates_present = []
     for fn in foo:
@@ -26,13 +30,81 @@ def last_simulation_date(dir):
     return restart_dates_present[0]
 
 
+# Check the restart directory for restart files.
+# Return the date of the latest one.
+def last_date_of_cbh_files(dir):
+    # get the list of CBH files
+    foo = glob.glob(dir + INDIR + '*.cbh')
+    
+    # Read the start, end, and number of features for each CBH file.
+    sd = None
+    ed = None
+    nf = -1
+    for fn in foo:
+        fp = open(fn, "r")
+        comment = fp.readline()
+        l = fp.readline()
+        tok = l.split()
+        var_name = tok[0]
+        nfeat = int(tok[1])
+        l = fp.readline()
+        l = fp.readline()
+        tok = l.split()
+        start_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
+
+        for line in fp:
+            pass 
+        last = line
+
+        tok = last.split()
+        end_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
+#        delta = end_date - start_date
+#        nts = delta.days + 1
+        
+        fp.close()
+        
+        # check that the start dates match
+        if sd == None:
+            sd = start_date
+        else:
+            if sd != start_date:
+                print('log message: start dates in cbh files do not match')
+                return None, None, -1
+        
+        # check that the end dates match
+        if ed == None:
+            ed = end_date
+        else:
+            if ed != end_date:
+                print('log message: end dates in cbh files do not match')
+                return None, None, -1
+            
+        # check that the number of features match
+        if nf == -1:
+            nf = nfeat
+        else:
+            if nf != nfeat:
+                print('log message: number of features in cbh files do not match')
+                return None, None, -1
+            
+    return sd, ed, nf
+
+
 def main(dir):
 
     # Determine the date for the last simulation by finding the last restart file
     lsd = last_simulation_date(dir)
     print('last simulation date = ' + lsd.strftime('%Y-%m-%d'))
     
-    # Determine the last date of the historical CBH data
+    # Determine the last date of the CBH files
+    csd, ced, cfc = last_date_of_cbh_files(dir)
+    if csd:
+        print('last date in CBH files ', ced.strftime('%Y-%m-%d'))
+        print('feature count in CBH files ', cfc)
+
+    else:
+        print('log message: last_date_of_cbh failed.')
+
     
     # Run the Fetcher/Parser to pull available data
     
