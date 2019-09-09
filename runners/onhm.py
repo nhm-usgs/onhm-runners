@@ -15,6 +15,7 @@ import datetime
 RESTARTDIR = 'restart/'
 INDIR = 'in/'
 OUTDIR = 'out/'
+IDAHO_PROVISIONAL_DAYS = 59
 
 # Check the restart directory for restart files.
 # Return the date of the latest one.
@@ -27,7 +28,8 @@ def last_simulation_date(dir):
         restart_dates_present.append(datetime.datetime.strptime(tail[0:10], "%Y-%m-%d"))
     
     restart_dates_present.sort(reverse=True)
-    return restart_dates_present[0]
+    f1 = restart_dates_present[0].date()
+    return f1
 
 
 # Check the restart directory for restart files.
@@ -86,15 +88,38 @@ def last_date_of_cbh_files(dir):
             if nf != nfeat:
                 print('log message: number of features in cbh files do not match')
                 return None, None, -1
-            
+    
     return sd, ed, nf
+
+
+def compute_pull_dates(restart_date, ced):
+    today = datetime.date.today()
+    yesterday = today - datetime.timedelta(days=1)
+    pull_date = yesterday - datetime.timedelta(days=IDAHO_PROVISIONAL_DAYS)
+    
+    # if the restart date is earlier than the pull date, reset the pull date
+    if restart_date < pull_date:
+        pull_date = restart_date
+        print('log message: pull_date reset to restart_date')
+    
+    # if the end date of the CBH files is earlier than the pull date,
+    # reset the pull date. Assume that the last 60 days of the CBH need to be
+    # repulled.
+    cbh_repull_date = ced - datetime.timedelta(days=IDAHO_PROVISIONAL_DAYS)
+    if cbh_repull_date < pull_date:
+        pull_date = cbh_repull_date
+        print('log message: pull_date reset to CBH repull date')
+        
+    return pull_date, yesterday
 
 
 def main(dir):
 
     # Determine the date for the last simulation by finding the last restart file
     lsd = last_simulation_date(dir)
+    restart_date = lsd + datetime.timedelta(days=1)
     print('last simulation date = ' + lsd.strftime('%Y-%m-%d'))
+    print('restart date = ' + restart_date.strftime('%Y-%m-%d'))
     
     # Determine the last date of the CBH files
     csd, ced, cfc = last_date_of_cbh_files(dir)
@@ -104,9 +129,14 @@ def main(dir):
 
     else:
         print('log message: last_date_of_cbh failed.')
-
+        
+    # Determine the dates for the data pull
+    start_pull_date, end_pull_date = compute_pull_dates(restart_date, ced)
+    print('pull period start = ', start_pull_date, ' end = ', end_pull_date)
     
     # Run the Fetcher/Parser to pull available data
+    # Rich: assume that the start_pull_date = 2019-06-02 and the
+    # end_pull_date = 2019-09-08
     
     # If the Fetcher/Parser pull has new data, map it onto the HRUs
     
