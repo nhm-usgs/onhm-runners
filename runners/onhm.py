@@ -10,6 +10,7 @@ import os
 import sys
 import glob
 import datetime
+import subprocess
 
 
 RESTARTDIR = 'restart/'
@@ -135,10 +136,16 @@ def main(dir):
     print('pull period start = ', start_pull_date, ' end = ', end_pull_date)
     
     # Run the Fetcher/Parser to pull available data
-    # Rich: assume that the start_pull_date = 2019-06-02 and the
-    # end_pull_date = 2019-09-08
-    
-    # If the Fetcher/Parser pull has new data, map it onto the HRUs
+    # RMCD: Note sure this works, I imagine this would be the call to make over-riding
+    # the START_DATE and END_DATE ENV variables setup in the nhmusgs-ofp Dockerfile
+    sformat = "%Y-%m-%d"
+    str_start_pull_date = start_pull_date.strftime(sformat)
+    str_end_pull_date = end_pull_date.strftime(sformat)
+    # START_DATE and END_DATE are ENV variables in nhmusgs-ofp Docker file we over-ride with -e option
+    ofp_docker_cmd = f"docker run ofp -e START_DATE={str_start_pull_date} END_DATE={str_end_pull_date}"
+    with open("ofp_log.log", "a") as output:
+        subprocess.call(ofp_docker_cmd, stdout=output, stderr=output)
+
     
     # Add/overwrite the CBH files with the new Fetcher/Parser data
     
