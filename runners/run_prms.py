@@ -1,7 +1,8 @@
 import subprocess
 
 
-def make_init_file(st, et, prms_path, work_dir, init_flag, save_flag, control_file, init_file):
+def run(st, et, prms_path, work_dir, init_flag, save_flag, control_file,
+        init_file, save_file, log_file_name):
     tok = st.split('-')
     start_args = ' -set start_time ' + str(tok[0]) + ',' + str(tok[1]) + ',' + str(tok[2]) + ',0,0,0'
     tok = et.split('-')
@@ -16,7 +17,7 @@ def make_init_file(st, et, prms_path, work_dir, init_flag, save_flag, control_fi
 
     if save_flag:
         save_vars_to_file = ' -set save_vars_to_file 1'
-        var_save_file = ' -set var_save_file prms_save_' + st + '_' + et + '.restart'
+        var_save_file = ' -set var_save_file ' + save_file
     else:
         save_vars_to_file = ' -set save_vars_to_file 0'
         var_save_file = ''
@@ -28,10 +29,17 @@ def make_init_file(st, et, prms_path, work_dir, init_flag, save_flag, control_fi
 
     print(args)
 
-    popen = subprocess.Popen(args.split(), stdout=subprocess.PIPE, cwd=work_dir)
+    popen = subprocess.Popen(args.split(), stdout=subprocess.PIPE,
+                             cwd=work_dir)
     popen.wait()
     output = popen.stdout.read()
-    print(output)
+    
+#    with open(work_dir + log_file_name, 'w', buffering=20*(1024**2)) as myfile:
+    if log_file_name:
+        with open(work_dir + log_file_name, 'w') as myfile:
+            for line in output:
+                myfile.write(str(line) + '\n')
+#    print(output)
 
 
 def main():
@@ -71,15 +79,17 @@ def main():
     end_time = "1981-4-1"
     init_flag = False
     save_flag = True
+    save_file = 'save.prms'
     init_file = None
-    make_init_file(start_time, end_time, prms_path, work_dir, init_flag, save_flag, control_file, init_file)
+    run(start_time, end_time, prms_path, work_dir, init_flag, save_flag, control_file, init_file, save_file, None)
 
     start_time = "1981-4-2"
     end_time = "1981-9-30"
     init_flag = True
     save_flag = False
+    save_file = 'save.prms'
     init_file = 'prms_save_1980-10-1_1981-4-1cd cd.restart'
-    make_init_file(start_time, end_time, prms_path, work_dir, init_flag, save_flag, control_file, init_file)
+    run(start_time, end_time, prms_path, work_dir, init_flag, save_flag, control_file, init_file, save_file, None)
 
 
 if __name__ == '__main__':

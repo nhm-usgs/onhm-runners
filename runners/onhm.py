@@ -10,12 +10,18 @@ import os
 import sys
 import glob
 import datetime
-
+import run_prms
+import prms_verifier
+import prms_outputs2_ncf
 
 RESTARTDIR = 'restart/'
-INDIR = 'in/'
-OUTDIR = 'out/'
-IDAHO_PROVISIONAL_DAYS = 59
+INDIR = 'input/'
+OUTDIR = 'output/'
+GRIDMET_PROVISIONAL_DAYS = 59
+PRMSPATH = '/work/markstro/operat/repos/prms/prms/prms'
+WORKDIR = '/work/markstro/operat/setup/test/NHM-PRMS_CONUS/'
+CONTROLPATH = './NHM-PRMS.control'
+PRMSLOGPATH = './prms.log'
 
 # Check the restart directory for restart files.
 # Return the date of the latest one.
@@ -95,7 +101,7 @@ def last_date_of_cbh_files(dir):
 def compute_pull_dates(restart_date, ced):
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
-    pull_date = yesterday - datetime.timedelta(days=IDAHO_PROVISIONAL_DAYS)
+    pull_date = yesterday - datetime.timedelta(days=GRIDMET_PROVISIONAL_DAYS)
     
     # if the restart date is earlier than the pull date, reset the pull date
     if restart_date < pull_date:
@@ -105,7 +111,7 @@ def compute_pull_dates(restart_date, ced):
     # if the end date of the CBH files is earlier than the pull date,
     # reset the pull date. Assume that the last 60 days of the CBH need to be
     # repulled.
-    cbh_repull_date = ced - datetime.timedelta(days=IDAHO_PROVISIONAL_DAYS)
+    cbh_repull_date = ced - datetime.timedelta(days=GRIDMET_PROVISIONAL_DAYS)
     if cbh_repull_date < pull_date:
         pull_date = cbh_repull_date
         print('log message: pull_date reset to CBH repull date')
@@ -142,12 +148,35 @@ def main(dir):
     
     # Add/overwrite the CBH files with the new Fetcher/Parser data
     
-    # Figure out the run period for PRMS. It should usually be the previous 60
-    # days, but it could be more if the ONHM has been down for some time
+    # Figure out the run period for PRMS. It should usually be from one day
+    # past the date of the restart file through yesterday.
+    # This is a hack until FP code is in here and CBH files are updated
+    start_prms_date = datetime.date(2019, 6, 2)
+    end_prms_date = datetime.date(2019, 7, 31)
+    print(start_prms_date.strftime('%Y-%m-%d'), end_prms_date.strftime('%Y-%m-%d'))
+
+    # Remove the verification file before running PRMS.
+    foo = glob.glob(dir + 'PRMS_VERIFIED_*')
+    for f in foo:
+        print(f)
+        os.remove(f)
     
     # Run PRMS for the prescribed period.
+    # st, et, prms_path, work_dir, init_flag, save_flag, control_file, init_file, save_file
+    init_file = RESTARTDIR + lsd.strftime('%Y-%m-%d') + '.restart'
+    save_file = RESTARTDIR + end_prms_date.strftime('%Y-%m-%d') + '.restart'
+    
+    run_prms.run(start_prms_date.strftime('%Y-%m-%d'),
+                 end_prms_date.strftime('%Y-%m-%d'), PRMSPATH, dir, True, True,
+                 CONTROLPATH, init_file, save_file, PRMSLOGPATH)
     
     # Verify that PRMS ran correctly.
+    # args: work_dir, fname, min_time
+    ret_code = prms_verifier.main(dir, "prms.out", 1)
+    if ret_code == 0:
+        print('PRMS run verified')
+    else:
+        print('PRMS run failed')
     
     # Create ncf files from the output csv files (one for each output variable).
     
@@ -155,9 +184,6 @@ def main(dir):
     # like this YYYY-MM-DD_variable_name_out.nc
     
     # Copy these nc files (made in the previous step) to the s3 area.
-    
-    # Run PRMS to update the init files to reflect the run that was just made
-    # so as to be ready for the next run (usually tomorrow).
 
 
 if __name__ == '__main__':
@@ -170,5 +196,5 @@ if __name__ == '__main__':
     else:
         dir='/var/lib/nhm/NHM-PRMS_CONUS/'
         
-    dir = '/ssd/markstro/conusStreamTemp/work_lev3/'
+    dir = WORKDIR
     main(dir)
