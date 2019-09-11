@@ -63,13 +63,13 @@ def read_output(csvfn):
                         kk = kk + 1
                     except:
                         print('read_output: ', str(tok), str(ii), str(kk), str(indx[kk]-1))
+                 
+                # Get the base date (ie date of first time step) from the first row of values
+                if ii == 0:
+                    base_date = tok
                 else:
-                    # Get the base date (ie date of first time step) from the first row of values
-                    if ii == 0:
-                        base_date = tok
-                    else:
-                        end_date = tok
-                    # print(tok)
+                    end_date = tok
+                # print(tok)
 
                 jj = jj + 1
             ii = ii + 1
@@ -78,7 +78,7 @@ def read_output(csvfn):
 
 def read_feature_georef(dir, cntl, name):
     fn1 = cntl["feature_georef"][name]["file"]
-    print (fn1)
+#    print (fn1)
 
     nfeat = sum(1 for line in open(dir + fn1))
     vals = np.zeros(shape=(nfeat))

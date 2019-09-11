@@ -10,9 +10,12 @@ import os
 import sys
 import glob
 import datetime
+
+# These are onhm modules
 import run_prms
 import prms_verifier
 import prms_outputs2_ncf
+import ncf2cbh
 
 RESTARTDIR = 'restart/'
 INDIR = 'input/'
@@ -116,10 +119,11 @@ def compute_pull_dates(restart_date, ced):
     # if the end date of the CBH files is earlier than the pull date,
     # reset the pull date. Assume that the last 60 days of the CBH need to be
     # repulled.
-    cbh_repull_date = ced - datetime.timedelta(days=GRIDMET_PROVISIONAL_DAYS)
-    if cbh_repull_date < pull_date:
-        pull_date = cbh_repull_date
-        print('log message: pull_date reset to CBH repull date')
+    if ced:
+        cbh_repull_date = ced - datetime.timedelta(days=GRIDMET_PROVISIONAL_DAYS)
+        if cbh_repull_date < pull_date:
+            pull_date = cbh_repull_date
+            print('log message: pull_date reset to CBH repull date')
         
     return pull_date, yesterday
 
@@ -142,6 +146,7 @@ def main(dir):
         print('log message: last_date_of_cbh failed.')
         
     # Determine the dates for the data pull
+    print('foo', restart_date, ced)
     start_pull_date, end_pull_date = compute_pull_dates(restart_date, ced)
     print('pull period start = ', start_pull_date, ' end = ', end_pull_date)
     
@@ -152,6 +157,11 @@ def main(dir):
     # If the Fetcher/Parser pull has new data, map it onto the HRUs
     
     # Add/overwrite the CBH files with the new Fetcher/Parser data
+    #
+    # Note that "_" are used instead of "-" in the date name.
+    # end_pull_date.strftime('%Y_%m_%d')
+    nc_fn = FPWRITEDIR + 'climate_' + end_pull_date.strftime('%Y_%m_%d') + '.nc'
+    ncf2cbh.run(dir + INDIR, nc_fn)
     
     # Figure out the run period for PRMS. It should usually be from one day
     # past the date of the restart file through yesterday.
@@ -182,6 +192,7 @@ def main(dir):
         print('PRMS run verified')
     else:
         print('PRMS run failed')
+        exit(ret_code)
     
     # Create ncf files from the output csv files (one for each output variable).
     prms_outputs2_ncf.write_ncf(dir, MAKERSPACE)
