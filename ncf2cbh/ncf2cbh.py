@@ -46,7 +46,9 @@ def read(nc_fn):
 
     return var_names, base_date, nts, vals
 
-def main(dir, nc_fn):
+# dir is where to write the CBH files
+# full path required for nc_fn
+def run(dir, nc_fn):
     var_names, base_date, nts, vals = read(nc_fn)
 
     # Write CBH files.
@@ -77,6 +79,9 @@ def main(dir, nc_fn):
                 fp.write('\n')
                 current_date += datetime.timedelta(days=1)
 
+
+def main(dir, nc_fn):
+    run(dir, nc_fn)
 
 if __name__ == '__main__':
     work_dir = '/var/lib/nhm/NHM-PRMS_CONUS/'
