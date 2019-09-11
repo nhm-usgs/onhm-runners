@@ -192,10 +192,10 @@ def main(dir):
         print('PRMS run verified')
     else:
         print('PRMS run failed')
-        exit(ret_code)
     
     # Create ncf files from the output csv files (one for each output variable).
-    prms_outputs2_ncf.write_ncf(dir, MAKERSPACE)
+    if !ret_code:
+        prms_outputs2_ncf.write_ncf(dir, MAKERSPACE)
     
     # Copy these nc files (made in the previous step) to the s3 area.
     
