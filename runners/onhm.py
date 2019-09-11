@@ -17,6 +17,8 @@ import run_prms
 import prms_verifier
 import prms_outputs2_ncf
 import ncf2cbh
+# Steve you'll have to add the path to the following import t
+from fponhm import FpoNHM
 
 RESTARTDIR = 'restart/'
 INDIR = 'input/'
@@ -154,15 +156,43 @@ def main(dir):
     # Run the Fetcher/Parser to pull available data
     # RMCD: Note sure this works, I imagine this would be the call to make over-riding
     # the START_DATE and END_DATE ENV variables setup in the nhmusgs-ofp Dockerfile
+    # The code below is one method to run ofp through nhumusgs/docker-images commented out
     sformat = "%Y-%m-%d"
     str_start_pull_date = start_pull_date.strftime(sformat)
     str_end_pull_date = end_pull_date.strftime(sformat)
-    # START_DATE and END_DATE are ENV variables in nhmusgs-ofp Docker file we over-ride with -e option
-    ofp_docker_cmd = f"docker run ofp -e START_DATE={str_start_pull_date} END_DATE={str_end_pull_date}"
-    with open("ofp_log.log", "a") as output:
-        subprocess.call(ofp_docker_cmd, stdout=output, stderr=output)
+    # # START_DATE and END_DATE are ENV variables in nhmusgs-ofp Docker file we over-ride with -e option
+    # ofp_docker_cmd = f"docker run ofp -e START_DATE={str_start_pull_date} END_DATE={str_end_pull_date}"
+    # with open("ofp_log.log", "a") as output:
+    #     subprocess.call(ofp_docker_cmd, stdout=output, stderr=output)
+    # Code below call fetch-parser thorough; assumes hru*.shp are in INDIR; will output to OUTDIR
+    print('starting Script')
+    #numdays = 2
+    fp = FpoNHM()
+    print('instantiated')
 
-    
+    #initialize(self, iptpath, optpath, weights_file, type=None, days=None, start_date=None, end_date=None)
+    ready = fp.initialize(INDIR, OUTDIR, INDIR+'/weights.csv', type='date', start_date=str_end_pull_date,
+                          end_date=str_end_pull_date)
+    if ready:
+        print('initalized\n')
+        print('running')
+        fp.run_weights()
+        print('finished running')
+        fp.finalize()
+        print('finalized')
+    else:
+        if extract_type == 'days':
+            print('Gridmet not updated continue with numdays -1')
+            fp.setNumdays(numdays-1)
+            print('initalized\n')
+            print('running')
+            fp.run_weights()
+            print('finished running')
+            fp.finalize()
+            print('finalized')
+        else:
+            print('error: extract did not return period specified')
+
     # Add/overwrite the CBH files with the new Fetcher/Parser data
     #
     # Note that "_" are used instead of "-" in the date name.
