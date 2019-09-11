@@ -8,14 +8,11 @@ import json
 dir = "./"
 hru_dir = '/work/markstro/intern_demo/GIS_Data/hrus_all_conus_geo.shp'
 #seg_dir = '/work/markstro/intern_demo/GIS_Data/segs_all_conus_geo.shp'
-#outdir = dir + "/output/"
-#indir = dir + "/input/"
-#sandbox = dir + "/output/"
-outdir = dir + "/out/"
-indir = dir + "/in/"
-sandbox = dir + "/out/"
-#fn = "/work/markstro/operat/setup/stage/stage_1/NHM-PRMS_CONUS/variable_info.json"
-fn = "//ssd/markstro/conusStreamTemp/work_lev3/variable_info.json"
+outdir = dir + "/output/"
+indir = dir + "/input/"
+sandbox = dir + "/output/"
+fn = "/work/markstro/operat/setup/test/NHM-PRMS_CONUS/variable_info.json"
+#fn = "//ssd/markstro/conusStreamTemp/work_lev3/variable_info.json"
 
 data = {
     "tz_code":'-05:00',

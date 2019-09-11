@@ -14,6 +14,16 @@ import sys
 
 # This function copied from onhm-runners/prms_utils/csv_reader.py
 # Read a PRMS "output" csv. For these files, there is a remapping in the header line that tells the order of the columns
+
+
+###############################################################################
+# DANGER
+# This only writes the last line of the output CSV to the ncf !!!
+# Only use this for onhm simulation to Makerspace. All they need is the output
+# for the last day of the simulation!
+# DANGER
+###############################################################################
+
 def read_output(csvfn):
     # figure out the number of features (ncol - 1)
     # figure out the number of timesteps (nrow -1)
@@ -102,115 +112,125 @@ def write_timeseries_block(cntl, ncf, name):
 def write_timeseries_values(cntl, ncf, name, vals, nc_var):
     for ii in range(0, len(vals)):
         nc_var[ii, :] = vals[ii]
+    
+    
+def write_timeseries_last_value(vals, nc_var):
+    for ii in range(0, len(vals)):
+        nc_var[ii] = vals[ii]
 
 
-def main(dir):
+def write_ncf(dir, varnames):
     json_file = str(dir) + "/" + "variable_info.json"
     with open(json_file, "r") as read_file:
         cntl = json.load(read_file)
 
 # Read the PRMS output
-    var_names = cntl["output_variables"].keys()
-    val_list = []
-    dim_list = set()
+#    var_names = cntl["output_variables"].keys()
 
-    for var_name in var_names:
+    for var_name in varnames:
+        dim_list = set()
         print("processing " + var_name)
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
+        print(dim_list)
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
+        print(csv_fn)
 #        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
 #        print("####### pwd = " + os.getcwd())
         nts, nfeats, base_date, end_date, vals = read_output(csv_fn)
+        print(nts, nfeats, base_date, end_date)
 
         conversion_factor = float(cntl["output_variables"][var_name]["conversion_factor"])
+        print(conversion_factor)
         iis = len(vals)
         jjs = len(vals[0])
+        print(iis, jjs)
 
         for ii in range(0, iis):
             for jj in range(1, jjs):
                 vals[ii,jj] = vals[ii,jj] * conversion_factor
 
-        val_list.append(vals)
-
-    nhrus = -1
-    if 'hruid' in dim_list:
-        hru_lat_vals = read_feature_georef(cntl, "hru_lat")
-        hru_lon_vals = read_feature_georef(cntl, "hru_lon")
-        nhrus = len(hru_lat_vals)
-
-
-    nsegments = -1
-    if 'segid' in dim_list:
-        seg_lat_vals = read_feature_georef(cntl, "seg_lat")
-        seg_lon_vals = read_feature_georef(cntl, "seg_lon")
-        nsegments = len(seg_lat_vals)
+        nhrus = -1
+        if 'hruid' in dim_list:
+            hru_lat_vals = read_feature_georef(cntl, "hru_lat")
+            hru_lon_vals = read_feature_georef(cntl, "hru_lon")
+            nhrus = len(hru_lat_vals)
+    
+    
+        nsegments = -1
+        if 'segid' in dim_list:
+            seg_lat_vals = read_feature_georef(cntl, "seg_lat")
+            seg_lon_vals = read_feature_georef(cntl, "seg_lon")
+            nsegments = len(seg_lat_vals)
 
 # write the ncf file
-    ofn = str(dir) + "/output/" + str(end_date) + "_out.nc"
-    # print('writing netcdf file ' + cntl['ncf_file_name'])
-    print('writing netcdf file ' + ofn)
-    ncf = Dataset(ofn, 'w', format='NETCDF4_CLASSIC')
+        ofn = str(dir) + "/output/" + str(end_date) + "_" + var_name + ".nc"
+        # print('writing netcdf file ' + cntl['ncf_file_name'])
+        print('writing netcdf file ' + ofn)
+        ncf = Dataset(ofn, 'w', format='NETCDF4_CLASSIC')
 
     # Write dimensions block
-    if nhrus > 0:
-        hru_dim = ncf.createDimension('hruid', nhrus)
-    if nsegments > 0:
-        nsegments_dim = ncf.createDimension('segid', nsegments)
-    time_dim = ncf.createDimension('time', None)
+        if nhrus > 0:
+            hru_dim = ncf.createDimension('hruid', nhrus)
+        if nsegments > 0:
+            nsegments_dim = ncf.createDimension('segid', nsegments)
+        time_dim = ncf.createDimension('time', None)
 
     # Put in the indexes for the dimensions
-    time_idx = ncf.createVariable("time", np.int32, ("time"), )
-    time_idx.long_name = "time"
-    time_idx.standard_name = "time"
-    time_idx.cf_role = "timeseries_id"
-    time_idx.units = "days since " + base_date + " 00:00" + cntl["tz_code"]
+        time_idx = ncf.createVariable("time", np.int32, ("time"), )
+        time_idx.long_name = "time"
+        time_idx.standard_name = "time"
+        time_idx.cf_role = "timeseries_id"
+        time_idx.units = "days since " + end_date + " 00:00" + cntl["tz_code"]
 
-    if nhrus > 0:
-        hru_idx = ncf.createVariable("hruid", np.int32, ("hruid"), )
-        hru_idx.long_name = "local model hru id"
+        if nhrus > 0:
+            hru_idx = ncf.createVariable("hruid", np.int32, ("hruid"), )
+            hru_idx.long_name = "local model hru id"
+    
+        if nsegments > 0:
+            seg_idx = ncf.createVariable("segid", np.int32, ("segid"), )
+            seg_idx.long_name = "local model seg id"
 
-    if nsegments > 0:
-        seg_idx = ncf.createVariable("segid", np.int32, ("segid"), )
-        seg_idx.long_name = "local model seg id"
+        if nhrus > 0:
+            hru_lat = write_variable_block(cntl, ncf, "hru_lat")
+            hru_lon = write_variable_block(cntl, ncf, "hru_lon")
+    
+        if nsegments > 0:
+            seg_lat = write_variable_block(cntl, ncf, "seg_lat")
+            seg_lon = write_variable_block(cntl, ncf, "seg_lon")
 
-    if nhrus > 0:
-        hru_lat = write_variable_block(cntl, ncf, "hru_lat")
-        hru_lon = write_variable_block(cntl, ncf, "hru_lon")
+        ncf.conventions = "CF-1.8"
+        ncf.featureType = "timeSeries"
+        ncf.history = str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2_ncf.py'
 
-    if nsegments > 0:
-        seg_lat = write_variable_block(cntl, ncf, "seg_lat")
-        seg_lon = write_variable_block(cntl, ncf, "seg_lon")
+        # Write data
+        time_idx[:] = np.arange(0, 1, 1)
+        if nhrus > 0:
+            hru_idx[:] = np.arange(1, nhrus+1, 1)
+        if nsegments > 0:
+            seg_idx[:] = np.arange(1, nsegments + 1, 1)
 
-    ncf_vars = []
-    for var_name in var_names:
-        ncf_vars.append(write_timeseries_block(cntl, ncf, var_name))
-
-    ncf.conventions = "CF-1.8"
-    ncf.featureType = "timeSeries"
-    ncf.history = str(datetime.datetime.now()) + ',' + str(getpass.getuser()) + ',prms_outputs2_cdl.py'
-
-    # Write data
-    time_idx[:] = np.arange(0, nts, 1)
-    if nhrus > 0:
-        hru_idx[:] = np.arange(1, nhrus+1, 1)
-    if nsegments > 0:
-        seg_idx[:] = np.arange(1, nsegments + 1, 1)
-
-    if nhrus > 0:
-        hru_lat[:] = hru_lat_vals
-        hru_lon[:] = hru_lon_vals
-
-    if nsegments > 0:
-        seg_lat[:] = seg_lat_vals
-        seg_lon[:] = seg_lon_vals
-
-    ii = 0
-    for var_name in var_names:
-        write_timeseries_values(cntl, ncf, var_name, val_list[ii], ncf_vars[ii])
-        ii = ii + 1
-
-    ncf.close()
+        if nhrus > 0:
+            hru_lat[:] = hru_lat_vals
+            hru_lon[:] = hru_lon_vals
+    
+        if nsegments > 0:
+            seg_lat[:] = seg_lat_vals
+            seg_lon[:] = seg_lon_vals
+            
+        ncf_var = write_timeseries_block(cntl, ncf, var_name)
+        write_timeseries_last_value(vals, ncf_var)
+        ncf.close()
+    
+    
+def main(dir):
+#    write_ncf(dir)
+    
+# testing for onhm
+    dir = '/work/markstro/operat/setup/test/NHM-PRMS_CONUS/'
+    VARNAMES = ['dprst_stor_hru','gwres_stor','hru_impervstor','hru_intcpstor',
+            'pkwater_equiv','soil_moist_tot']
+    write_ncf(dir, VARNAMES)
 
 
 if __name__ == '__main__':
@@ -222,5 +242,5 @@ if __name__ == '__main__':
         print('setting dir = ' + sys.argv[1])
         dir = sys.argv[1]
 
-    os.chdir(dir)
+#    os.chdir(dir)
     main(dir)

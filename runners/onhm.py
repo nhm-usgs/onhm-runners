@@ -22,6 +22,8 @@ PRMSPATH = '/work/markstro/operat/repos/prms/prms/prms'
 WORKDIR = '/work/markstro/operat/setup/test/NHM-PRMS_CONUS/'
 CONTROLPATH = './NHM-PRMS.control'
 PRMSLOGPATH = './prms.log'
+MAKERSPACE = ['dprst_stor_hru','gwres_stor','hru_impervstor','hru_intcpstor',
+            'pkwater_equiv','soil_moist_tot']
 
 # Check the restart directory for restart files.
 # Return the date of the latest one.
@@ -179,11 +181,12 @@ def main(dir):
         print('PRMS run failed')
     
     # Create ncf files from the output csv files (one for each output variable).
-    
-    # Rename the ncf output files according to the last day of the simulation,
-    # like this YYYY-MM-DD_variable_name_out.nc
+    prms_outputs2_ncf.write_ncf(dir, MAKERSPACE)
     
     # Copy these nc files (made in the previous step) to the s3 area.
+    
+    # TODO: The previous step wrote 6 .nc files in dir + OUTDIR  These files
+    # need to be moved to the S3 storage for the Makerspace visualization.
 
 
 if __name__ == '__main__':
