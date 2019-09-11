@@ -76,13 +76,13 @@ def read_output(csvfn):
     return nts, nfeat, base_date, end_date, vals
 
 
-def read_feature_georef(cntl, name):
+def read_feature_georef(dir, cntl, name):
     fn1 = cntl["feature_georef"][name]["file"]
     print (fn1)
 
-    nfeat = sum(1 for line in open(fn1))
+    nfeat = sum(1 for line in open(dir + fn1))
     vals = np.zeros(shape=(nfeat))
-    with open(fn1, 'r') as csvfile:
+    with open(dir + fn1, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         ii = 0
         for row in spamreader:
@@ -129,22 +129,22 @@ def write_ncf(dir, varnames):
 
     for var_name in varnames:
         dim_list = set()
-        print("processing " + var_name)
+#        print("processing " + var_name)
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
-        print(dim_list)
+#        print(dim_list)
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
-        print(csv_fn)
+#        print(csv_fn)
 #        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
 #        print("####### pwd = " + os.getcwd())
-        nts, nfeats, base_date, end_date, vals = read_output(csv_fn)
-        print(nts, nfeats, base_date, end_date)
+        nts, nfeats, base_date, end_date, vals = read_output(dir + csv_fn)
+#        print(nts, nfeats, base_date, end_date)
 
         conversion_factor = float(cntl["output_variables"][var_name]["conversion_factor"])
-        print(conversion_factor)
+#        print(conversion_factor)
         iis = len(vals)
         jjs = len(vals[0])
-        print(iis, jjs)
+#        print(iis, jjs)
 
         for ii in range(0, iis):
             for jj in range(1, jjs):
@@ -152,19 +152,19 @@ def write_ncf(dir, varnames):
 
         nhrus = -1
         if 'hruid' in dim_list:
-            hru_lat_vals = read_feature_georef(cntl, "hru_lat")
-            hru_lon_vals = read_feature_georef(cntl, "hru_lon")
+            hru_lat_vals = read_feature_georef(dir, cntl, "hru_lat")
+            hru_lon_vals = read_feature_georef(dir, cntl, "hru_lon")
             nhrus = len(hru_lat_vals)
     
     
         nsegments = -1
         if 'segid' in dim_list:
-            seg_lat_vals = read_feature_georef(cntl, "seg_lat")
-            seg_lon_vals = read_feature_georef(cntl, "seg_lon")
+            seg_lat_vals = read_feature_georef(dir, cntl, "seg_lat")
+            seg_lon_vals = read_feature_georef(dir, cntl, "seg_lon")
             nsegments = len(seg_lat_vals)
 
 # write the ncf file
-        ofn = str(dir) + "/output/" + str(end_date) + "_" + var_name + ".nc"
+        ofn = str(dir) + "output/" + str(end_date) + "_" + var_name + ".nc"
         # print('writing netcdf file ' + cntl['ncf_file_name'])
         print('writing netcdf file ' + ofn)
         ncf = Dataset(ofn, 'w', format='NETCDF4_CLASSIC')

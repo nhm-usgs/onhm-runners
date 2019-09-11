@@ -25,6 +25,9 @@ PRMSLOGPATH = './prms.log'
 MAKERSPACE = ['dprst_stor_hru','gwres_stor','hru_impervstor','hru_intcpstor',
             'pkwater_equiv','soil_moist_tot']
 
+# This one will probably need to change
+FPWRITEDIR = WORKDIR
+
 # Check the restart directory for restart files.
 # Return the date of the latest one.
 def last_simulation_date(dir):
