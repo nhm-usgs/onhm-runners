@@ -10,14 +10,13 @@ import os
 import sys
 import glob
 import datetime
-import subprocess
+#import subprocess
 
 # These are onhm modules
 import run_prms
 import prms_verifier
 import prms_outputs2_ncf
 import ncf2cbh
-# Steve you'll have to add the path to the following import t
 from fponhm import FpoNHM
 
 RESTARTDIR = 'restart/'
@@ -52,60 +51,60 @@ def last_simulation_date(dir):
 
 # Check the restart directory for restart files.
 # Return the date of the latest one.
-def last_date_of_cbh_files(dir):
-    # Read the start, end, and number of features for each CBH file.
-    sd = None
-    ed = None
-    nf = -1
-    for fn in CBHFILES:
-        fp = open(fn, "r")
-        comment = fp.readline()
-        l = fp.readline()
-        tok = l.split()
-        var_name = tok[0]
-        nfeat = int(tok[1])
-        l = fp.readline()
-        l = fp.readline()
-        tok = l.split()
-        start_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
-
-        for line in fp:
-            pass 
-        last = line
-
-        tok = last.split()
-        end_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
-#        delta = end_date - start_date
-#        nts = delta.days + 1
-        
-        fp.close()
-        
-        # check that the start dates match
-        if sd == None:
-            sd = start_date
-        else:
-            if sd != start_date:
-                print('log message: start dates in cbh files do not match')
-                print(sd, start_date)
-                return None, None, -1
-        
-        # check that the end dates match
-        if ed == None:
-            ed = end_date
-        else:
-            if ed != end_date:
-                print('log message: end dates in cbh files do not match')
-                return None, None, -1
-            
-        # check that the number of features match
-        if nf == -1:
-            nf = nfeat
-        else:
-            if nf != nfeat:
-                print('log message: number of features in cbh files do not match')
-                return None, None, -1
-    
-    return sd, ed, nf
+#def last_date_of_cbh_files(dir):
+#    # Read the start, end, and number of features for each CBH file.
+#    sd = None
+#    ed = None
+#    nf = -1
+#    for fn in CBHFILES:
+#        fp = open(fn, "r")
+#        comment = fp.readline()
+#        l = fp.readline()
+#        tok = l.split()
+#        var_name = tok[0]
+#        nfeat = int(tok[1])
+#        l = fp.readline()
+#        l = fp.readline()
+#        tok = l.split()
+#        start_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
+#
+#        for line in fp:
+#            pass 
+#        last = line
+#
+#        tok = last.split()
+#        end_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
+##        delta = end_date - start_date
+##        nts = delta.days + 1
+#        
+#        fp.close()
+#        
+#        # check that the start dates match
+#        if sd == None:
+#            sd = start_date
+#        else:
+#            if sd != start_date:
+#                print('log message: start dates in cbh files do not match')
+#                print(sd, start_date)
+#                return None, None, -1
+#        
+#        # check that the end dates match
+#        if ed == None:
+#            ed = end_date
+#        else:
+#            if ed != end_date:
+#                print('log message: end dates in cbh files do not match')
+#                return None, None, -1
+#            
+#        # check that the number of features match
+#        if nf == -1:
+#            nf = nfeat
+#        else:
+#            if nf != nfeat:
+#                print('log message: number of features in cbh files do not match')
+#                return None, None, -1
+#    
+#    return sd, ed, nf
 
 
 def compute_pull_dates(restart_date):
@@ -149,8 +148,10 @@ def main(dir):
         
     # Determine the dates for the data pull
     start_pull_date, end_pull_date = compute_pull_dates(restart_date)
-    # DANGER!
-    end_pull_date = datetime.date(2019, 9, 11)
+    
+    start_pull_date = datetime.date(2019, 9, 1)
+    end_pull_date = datetime.date(2019, 9, 2)
+    
     print('pull period start = ', start_pull_date, ' end = ', end_pull_date)
     
     # Run the Fetcher/Parser to pull available data
@@ -170,9 +171,13 @@ def main(dir):
     fp = FpoNHM()
     print('instantiated')
 
+    extract_type = 'date'
+    numdays = 2
     #initialize(self, iptpath, optpath, weights_file, type=None, days=None, start_date=None, end_date=None)
-    ready = fp.initialize(INDIR, OUTDIR, INDIR+'/weights.csv', type='date', start_date=str_end_pull_date,
-                          end_date=str_end_pull_date)
+    ready = fp.initialize(dir + INDIR + 'nhm_hru_data/', dir + OUTDIR, dir + INDIR+'nhm_hru_data/weights.csv',
+                          type=extract_type,
+                          start_date=start_pull_date,
+                          end_date=end_pull_date)
     if ready:
         print('initalized\n')
         print('running')
@@ -181,7 +186,7 @@ def main(dir):
         fp.finalize()
         print('finalized')
     else:
-        if extract_type == 'days':
+        if extract_type == 'days' or extract_type == 'date':
             print('Gridmet not updated continue with numdays -1')
             fp.setNumdays(numdays-1)
             print('initalized\n')
@@ -205,7 +210,8 @@ def main(dir):
     # This is a hack until FP code is in here and CBH files are updated
     start_prms_date = datetime.date(2019, 6, 2)
     end_prms_date = datetime.date(2019, 9, 8)
-    print("hard coded prms run time " , start_prms_date.strftime('%Y-%m-%d'), end_prms_date.strftime('%Y-%m-%d'))
+    print("hard coded prms run time " , start_prms_date.strftime('%Y-%m-%d'),
+          end_prms_date.strftime('%Y-%m-%d'))
 
     # Remove the verification file before running PRMS.
     foo = glob.glob(dir + 'PRMS_VERIFIED_*')
@@ -216,11 +222,13 @@ def main(dir):
     # Run PRMS for the prescribed period.
     # st, et, prms_path, work_dir, init_flag, save_flag, control_file, init_file, save_file
     init_file = RESTARTDIR + lsd.strftime('%Y-%m-%d') + '.restart'
-    save_file = RESTARTDIR + end_prms_date.strftime('%Y-%m-%d') + '.restart'
+#    save_file = RESTARTDIR + end_prms_date.strftime('%Y-%m-%d') + '.restart'
     
-#    run_prms.run(start_prms_date.strftime('%Y-%m-%d'),
-#                 end_prms_date.strftime('%Y-%m-%d'), PRMSPATH, dir, True, False,
-#                 CONTROLPATH, init_file, None, PRMSLOGPATH)
+    run_prms.run(st=start_prms_date.strftime('%Y-%m-%d'),
+                 et=end_prms_date.strftime('%Y-%m-%d'), prms_path=PRMSPATH,
+                 work_dir=dir, init_flag=True, save_flag=False,
+                 control_file=CONTROLPATH, init_file=init_file, save_file=None,
+                 log_file_name=PRMSLOGPATH)
     
     # Verify that PRMS ran correctly.
     # args: work_dir, fname, min_time
