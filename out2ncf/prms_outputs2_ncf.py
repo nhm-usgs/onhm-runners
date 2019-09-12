@@ -38,7 +38,7 @@ def read_output(csvfn):
             ii = ii + 1
         nts = ii
 
-    vals = np.zeros(shape=(nts,nfeat))
+    vals = np.zeros(shape=(1,nfeat))
     indx = np.zeros(shape=nfeat, dtype=int)
     with open(csvfn, 'r') as csvfile:
         spamreader = csv.reader(csvfile)
@@ -49,30 +49,28 @@ def read_output(csvfn):
             indx[ii-1] = int(header[ii])
 
         # print(indx)
+        # skip to last line
+        for row in spamreader:
+            last = row
 
         # Read the CSV file values, line-by-line, column-by-column
-        ii = 0
-        for row in spamreader:
-            jj = 0
-            kk = 0
-            for tok in row:
-                # Now skip the date/time fields and put the values into the 2D array
-                if jj > 0:
-                    try:
-                        vals[ii][indx[kk]-1] = float(tok)
-                        kk = kk + 1
-                    except:
-                        print('read_output: ', str(tok), str(ii), str(kk), str(indx[kk]-1))
-                 
+        jj = 0
+        kk = 0
+        for tok in last:
+            # Now skip the date/time fields and put the values into the 2D array
+            if jj > 0:
+                try:
+                    vals[0][indx[kk]-1] = float(tok)
+                    kk = kk + 1
+                except:
+                    print('read_output: ', str(tok), str(0), str(kk), str(indx[kk]-1))
+            else:
                 # Get the base date (ie date of first time step) from the first row of values
-                if ii == 0:
-                    base_date = tok
-                else:
-                    end_date = tok
-                # print(tok)
+                base_date = tok
+                end_date = tok
 
-                jj = jj + 1
-            ii = ii + 1
+            jj = jj + 1
+        
     return nts, nfeat, base_date, end_date, vals
 
 
@@ -138,8 +136,6 @@ def write_ncf(dir, varnames):
 #        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
 #        print("####### pwd = " + os.getcwd())
         nts, nfeats, base_date, end_date, vals = read_output(dir + csv_fn)
-#        print(nts, nfeats, base_date, end_date)
-
         conversion_factor = float(cntl["output_variables"][var_name]["conversion_factor"])
 #        print(conversion_factor)
         iis = len(vals)

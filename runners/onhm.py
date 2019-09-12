@@ -27,6 +27,7 @@ CONTROLPATH = './NHM-PRMS.control'
 PRMSLOGPATH = './prms.log'
 MAKERSPACE = ['dprst_stor_hru','gwres_stor','hru_impervstor','hru_intcpstor',
             'pkwater_equiv','soil_moist_tot']
+CBHFILES = ['tmin.cbh', 'tmax.cbh', 'prcp.cbh']
 
 # This one will probably need to change
 FPWRITEDIR = WORKDIR
@@ -49,14 +50,11 @@ def last_simulation_date(dir):
 # Check the restart directory for restart files.
 # Return the date of the latest one.
 def last_date_of_cbh_files(dir):
-    # get the list of CBH files
-    foo = glob.glob(dir + INDIR + '*.cbh')
-    
     # Read the start, end, and number of features for each CBH file.
     sd = None
     ed = None
     nf = -1
-    for fn in foo:
+    for fn in CBHFILES:
         fp = open(fn, "r")
         comment = fp.readline()
         l = fp.readline()
@@ -85,6 +83,7 @@ def last_date_of_cbh_files(dir):
         else:
             if sd != start_date:
                 print('log message: start dates in cbh files do not match')
+                print(sd, start_date)
                 return None, None, -1
         
         # check that the end dates match
@@ -106,7 +105,7 @@ def last_date_of_cbh_files(dir):
     return sd, ed, nf
 
 
-def compute_pull_dates(restart_date, ced):
+def compute_pull_dates(restart_date):
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
     pull_date = yesterday - datetime.timedelta(days=GRIDMET_PROVISIONAL_DAYS)
@@ -116,14 +115,14 @@ def compute_pull_dates(restart_date, ced):
         pull_date = restart_date
         print('log message: pull_date reset to restart_date')
     
-    # if the end date of the CBH files is earlier than the pull date,
-    # reset the pull date. Assume that the last 60 days of the CBH need to be
-    # repulled.
-    if ced:
-        cbh_repull_date = ced - datetime.timedelta(days=GRIDMET_PROVISIONAL_DAYS)
-        if cbh_repull_date < pull_date:
-            pull_date = cbh_repull_date
-            print('log message: pull_date reset to CBH repull date')
+#    # if the end date of the CBH files is earlier than the pull date,
+#    # reset the pull date. Assume that the last 60 days of the CBH need to be
+#    # repulled.
+#    if ced:
+#        cbh_repull_date = ced - datetime.timedelta(days=GRIDMET_PROVISIONAL_DAYS)
+#        if cbh_repull_date < pull_date:
+#            pull_date = cbh_repull_date
+#            print('log message: pull_date reset to CBH repull date')
         
     return pull_date, yesterday
 
@@ -136,18 +135,19 @@ def main(dir):
     print('last simulation date = ' + lsd.strftime('%Y-%m-%d'))
     print('restart date = ' + restart_date.strftime('%Y-%m-%d'))
     
-    # Determine the last date of the CBH files
-    csd, ced, cfc = last_date_of_cbh_files(dir)
-    if csd:
-        print('last date in CBH files ', ced.strftime('%Y-%m-%d'))
-        print('feature count in CBH files ', cfc)
-
-    else:
-        print('log message: last_date_of_cbh failed.')
+#    # Determine the last date of the CBH files
+#    csd, ced, cfc = last_date_of_cbh_files(dir)
+#    if csd:
+#        print('last date in CBH files ', ced.strftime('%Y-%m-%d'))
+#        print('feature count in CBH files ', cfc)
+#
+#    else:
+#        print('log message: last_date_of_cbh failed.')
         
     # Determine the dates for the data pull
-    print('foo', restart_date, ced)
-    start_pull_date, end_pull_date = compute_pull_dates(restart_date, ced)
+    start_pull_date, end_pull_date = compute_pull_dates(restart_date)
+    # DANGER!
+    end_pull_date = datetime.date(2019, 9, 11)
     print('pull period start = ', start_pull_date, ' end = ', end_pull_date)
     
     # Run the Fetcher/Parser to pull available data
@@ -160,15 +160,15 @@ def main(dir):
     #
     # Note that "_" are used instead of "-" in the date name.
     # end_pull_date.strftime('%Y_%m_%d')
-    nc_fn = FPWRITEDIR + 'climate_' + end_pull_date.strftime('%Y_%m_%d') + '.nc'
-    ncf2cbh.run(dir + INDIR, nc_fn)
+#    nc_fn = FPWRITEDIR + 'climate_' + end_pull_date.strftime('%Y_%m_%d') + '.nc'
+#    ncf2cbh.run(dir + INDIR, nc_fn)
     
     # Figure out the run period for PRMS. It should usually be from one day
     # past the date of the restart file through yesterday.
     # This is a hack until FP code is in here and CBH files are updated
     start_prms_date = datetime.date(2019, 6, 2)
-    end_prms_date = datetime.date(2019, 7, 31)
-    print(start_prms_date.strftime('%Y-%m-%d'), end_prms_date.strftime('%Y-%m-%d'))
+    end_prms_date = datetime.date(2019, 9, 8)
+    print("hard coded prms run time " , start_prms_date.strftime('%Y-%m-%d'), end_prms_date.strftime('%Y-%m-%d'))
 
     # Remove the verification file before running PRMS.
     foo = glob.glob(dir + 'PRMS_VERIFIED_*')
@@ -181,26 +181,24 @@ def main(dir):
     init_file = RESTARTDIR + lsd.strftime('%Y-%m-%d') + '.restart'
     save_file = RESTARTDIR + end_prms_date.strftime('%Y-%m-%d') + '.restart'
     
-    run_prms.run(start_prms_date.strftime('%Y-%m-%d'),
-                 end_prms_date.strftime('%Y-%m-%d'), PRMSPATH, dir, True, True,
-                 CONTROLPATH, init_file, save_file, PRMSLOGPATH)
+#    run_prms.run(start_prms_date.strftime('%Y-%m-%d'),
+#                 end_prms_date.strftime('%Y-%m-%d'), PRMSPATH, dir, True, False,
+#                 CONTROLPATH, init_file, None, PRMSLOGPATH)
     
     # Verify that PRMS ran correctly.
     # args: work_dir, fname, min_time
     ret_code = prms_verifier.main(dir, "prms.out", 1)
-    if ret_code == 0:
-        print('PRMS run verified')
-    else:
+    if ret_code != 0:
         print('PRMS run failed')
+
+    else:
+        print('PRMS run verified')
     
-    # Create ncf files from the output csv files (one for each output variable).
-    if !ret_code:
+        # Create ncf files from the output csv files (one for each output variable).
         prms_outputs2_ncf.write_ncf(dir, MAKERSPACE)
     
-    # Copy these nc files (made in the previous step) to the s3 area.
+        # Copy these nc files (made in the previous step) to the s3 area.
     
-    # TODO: The previous step wrote 6 .nc files in dir + OUTDIR  These files
-    # need to be moved to the S3 storage for the Makerspace visualization.
 
 
 if __name__ == '__main__':

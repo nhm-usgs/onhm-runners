@@ -28,13 +28,11 @@ def read(nc_fn):
     # print("dtime = " + str(dtime[0]))
 
     base_date_str = str(dtime[0])
-    print('base_date_str ' + base_date_str)
-    # base_date_str = "2019-05-05"
+#    print('base_date_str ' + base_date_str)
     tok = base_date_str.split(' ')
     ymd = tok[0]
     tok = ymd.split('-')
     base_date = datetime.date(int(tok[0]), int(tok[1]), int(tok[2]))
-    print(base_date)
 
     # Read the values into a dictionary.
     vals = {}
