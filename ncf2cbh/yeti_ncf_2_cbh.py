@@ -38,8 +38,8 @@ def main(dir, nc_fn):
 
 
 if __name__ == '__main__':
-    dir = '/work/markstro/operat/setup/init_file/orig_cbh_files/netcdf/'
-    nc_fn = dir + 'idaho_cbh_all_19790101-19791231.nc'
+    dir = '/work/markstro/operat/setup/test/cbh_update/gridMet/'
+    nc_fn = dir + '2019_climate_2019_09_13.nc'
 
     argc = len(sys.argv) - 1
     # print(argc)

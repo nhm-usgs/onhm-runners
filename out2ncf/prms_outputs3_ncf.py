@@ -1,7 +1,7 @@
 # Markstrom
 # Wed Sep 04 09:43:53 MDT 2019
 # 
-# This script runs against a multivariable animation file and writes the
+# This script runs against a CSV file and writes the
 # contents into a set of netcdf files, one for each variable
 
 #from prms_utils import csv_reader
@@ -227,7 +227,7 @@ def main(dir):
 
 
 if __name__ == '__main__':
-    dir = "/ssd/markstro/conusStreamTemp/work_lev3"
+    dir = "/work/markstro/operat/setup/test/NHM-PRMS_CONUS"
     argc = len(sys.argv) - 1
     # print(argc)
 
