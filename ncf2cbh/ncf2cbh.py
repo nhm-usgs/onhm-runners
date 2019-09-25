@@ -91,7 +91,7 @@ if __name__ == '__main__':
         print('setting dir = ' + sys.argv[1])
         dir = sys.argv[1]
     else:
-        dir='/var/lib/nhm/ofp/Output/'
+        dir='/var/lib/nhm/NHM-PRMS_CONUS/input/'
 
     nc_fn = dir + 'climate_'+str(datetime.datetime.now().strftime('%Y_%m_%d'))+'.nc'
 
