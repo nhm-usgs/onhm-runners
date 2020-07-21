@@ -66,7 +66,7 @@ def run(dir, nc_fn):
         v = vals[name]
         v2 = np.zeros(114958)
         nfeats = len(v[0])
-        fn2 = dir + name + ".cbh"
+        fn2 = dir + name + "_t.cbh" # _t to separate unfilled from filled cbh file
         current_date = base_date
         print('writing ' + fn2)
         with open(fn2, 'w') as fp:
