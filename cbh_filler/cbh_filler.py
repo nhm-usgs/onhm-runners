@@ -60,7 +60,7 @@ def read_cbh(cbh_fn):
     return dates, vals
 
 
-def main(cbh_in_fn, ofile, nhm_id_fn, miss_to_pres_mapping):
+def main(cbh_in_fn, cbh_out_fn, nhm_id_fn, miss_to_pres_mapping):
 
     varn = ['tmax', 'tmin', 'prcp', 'humidity']
     for var_name in varn:
@@ -101,7 +101,7 @@ def main(cbh_in_fn, ofile, nhm_id_fn, miss_to_pres_mapping):
         else:
             frmt = "%.1f"
         print(f'writing filled cbh file {var_name}')
-        cbh_writer(filled_vals, dates, nhm_id, cbh_out_fn, var_name, frmt)
+        cbh_writer(filled_vals, dates, nhm_id, ofile, var_name, frmt)
 
 
 if __name__ == "__main__":
