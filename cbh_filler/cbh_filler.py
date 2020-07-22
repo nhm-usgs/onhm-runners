@@ -97,9 +97,9 @@ def main(cbh_in_fn, ofile, nhm_id_fn, miss_to_pres_mapping):
         
 # Write out the filled values to a new CBH file
         if var_name == 'prcp':
-            fmt = "%.2f"
+            frmt = "%.2f"
         else:
-            fmt = "%.1f"
+            frmt = "%.1f"
         print(f'writing filled cbh file {var_name}')
         cbh_writer(filled_vals, dates, nhm_id, cbh_out_fn, var_name, frmt)
 
