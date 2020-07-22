@@ -60,40 +60,48 @@ def read_cbh(cbh_fn):
     return dates, vals
 
 
-def main(cbh_in_fn, ofile, nhm_id_fn, miss_to_pres_mapping, var_name, frmt):
+def main(cbh_in_fn, ofile, nhm_id_fn, miss_to_pres_mapping):
+
+    varn = ['tmax', 'tmin', 'prcp', 'humidity']
+    for varname in var:
     
 # Read the unfilled cbh file
-    ifile = Path(cbh_in_fn) / (varname + '_t.cbh') #ncf2cbh now outputs _t.cbh to distinguish between filled and unfilled
-    ofile = Path(cbh_out_fn) / (varname + '.cbh')
-    dates, vals = read_cbh(ifile)
-    nday = vals.shape[0]
-    nhru = vals.shape[1]
-    
+        ifile = Path(cbh_in_fn) / (varname + '_t.cbh') #ncf2cbh now outputs _t.cbh to distinguish between filled and unfilled
+        ofile = Path(cbh_out_fn) / (varname + '.cbh')
+        dates, vals = read_cbh(ifile)
+        nday = vals.shape[0]
+        nhru = vals.shape[1]
+        
 # read the order of the HRUs from a csv version of the parameter file.
-    nhm_id = np.loadtxt(nhm_id_fn, dtype='int')
+        nhm_id = np.loadtxt(nhm_id_fn, dtype='int')
 
 # Read the list of HRUs that have missing values from csv file
-    mapping_df = pd.read_csv(miss_to_pres_mapping)
-    mapping_df.head()
-    nmiss = mapping_df.shape[0]
-    
-    miss_id = mapping_df["nhru_v11_miss"].values
-    pres_id = mapping_df["nhru_v11_pres"].values
-    
+        mapping_df = pd.read_csv(miss_to_pres_mapping)
+        mapping_df.head()
+        nmiss = mapping_df.shape[0]
+        
+        miss_id = mapping_df["nhru_v11_miss"].values
+        pres_id = mapping_df["nhru_v11_pres"].values
+        
 # Fill the values
-    filled_vals = np.zeros(nday * nhru)
-    filled_vals.shape = (nday, nhru)
+        filled_vals = np.zeros(nday * nhru)
+        filled_vals.shape = (nday, nhru)
 
-    for iday in range(nday):
-        for ii in range(nhru):
-            filled_vals[iday,ii] = vals[iday,ii]
+        for iday in range(nday):
+            for ii in range(nhru):
+                filled_vals[iday,ii] = vals[iday,ii]
 
-    for iday in range(nday):
-        for ii in range(nmiss):
-            filled_vals[iday,miss_id[ii]-1] = vals[iday,pres_id[ii]-1]
-    
+        for iday in range(nday):
+            for ii in range(nmiss):
+                filled_vals[iday,miss_id[ii]-1] = vals[iday,pres_id[ii]-1]
+        
 # Write out the filled values to a new CBH file
-    cbh_writer(filled_vals, dates, nhm_id, cbh_out_fn, var_name, frmt)
+        if var_name == 'prcp':
+            fmt = "%.2f"
+        else:
+            fmt = "%.1f"
+        print(f'writing filled cbh file {var_name}')
+        cbh_writer(filled_vals, dates, nhm_id, cbh_out_fn, var_name, frmt)
 
 
 if __name__ == "__main__":
@@ -112,14 +120,16 @@ if __name__ == "__main__":
     print(sys.argv[1])
     
     if (len(sys.argv) == 7):     #test whether any arguments have been passed in
-        cbh_in_fn = sys.argv[1]
-        cbh_out_fn = sys.argv[2]
-        nhm_id_fn = sys.argv[3]
-        miss_to_pres_mapping = sys.argv[4]
-        var_name = sys.argv[5]
-        frmt = sys.argv[6]
+        cbh_in_fn = Path(sys.argv[1])
+        cbh_out_fn = Path(sys.argv[2])
+        nhm_id_fn = Path(sys.argv[3])
+        miss_to_pres_mapping = Path(sys.argv[4])
     else:
         print("No name passed in")
-        
-        
-    main(cbh_in_fn, cbh_out_fn, nhm_id_fn, miss_to_pres_mapping, var_name, frmt)
+
+    assert cbh_in_fn.exists(), "input directory doesn't exist"
+    assert cbh_out_fn.exists(), "output directory doesn't exist"
+    assert nhm_id_fn.exists(), "nhm_id file doesn't exist"
+    assert miss_to_pres_mapping.exists(), "mapping file doesn't exist"  
+    
+    main(cbh_in_fn, cbh_out_fn, nhm_id_fn, miss_to_pres_mapping)
