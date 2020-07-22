@@ -63,11 +63,11 @@ def read_cbh(cbh_fn):
 def main(cbh_in_fn, ofile, nhm_id_fn, miss_to_pres_mapping):
 
     varn = ['tmax', 'tmin', 'prcp', 'humidity']
-    for varname in varn:
+    for var_name in varn:
     
 # Read the unfilled cbh file
-        ifile = Path(cbh_in_fn) / (varname + '_t.cbh') #ncf2cbh now outputs _t.cbh to distinguish between filled and unfilled
-        ofile = Path(cbh_out_fn) / (varname + '.cbh')
+        ifile = Path(cbh_in_fn) / (var_name + '_t.cbh') #ncf2cbh now outputs _t.cbh to distinguish between filled and unfilled
+        ofile = Path(cbh_out_fn) / (var_name + '.cbh')
         dates, vals = read_cbh(ifile)
         nday = vals.shape[0]
         nhru = vals.shape[1]
