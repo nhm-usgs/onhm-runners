@@ -119,7 +119,7 @@ if __name__ == "__main__":
     print(sys.argv[0])
     print(sys.argv[1])
     
-    if (len(sys.argv) == 7):     #test whether any arguments have been passed in
+    if (len(sys.argv) == 5):     #test whether any arguments have been passed in
         cbh_in_fn = Path(sys.argv[1])
         cbh_out_fn = Path(sys.argv[2])
         nhm_id_fn = Path(sys.argv[3])
