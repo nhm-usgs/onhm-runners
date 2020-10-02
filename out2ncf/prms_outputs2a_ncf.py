@@ -127,17 +127,17 @@ def write_ncf(dir, varnames):
 
     for var_name in varnames:
         dim_list = set()
-#        print("processing " + var_name)
+        print("processing " + var_name)
         dim_list.add(cntl["output_variables"][var_name]["georef"]["dimid"])
 #        print(dim_list)
 
         csv_fn = cntl["output_variables"][var_name]["prms_out_file"]
-#        print(csv_fn)
+        print(csv_fn)
 #        nts, nfeats, base_date, end_date, vals = csv_reader.read_output(csv_fn)
 #        print("####### pwd = " + os.getcwd())
         nts, nfeats, base_date, end_date, vals = read_output(dir + csv_fn)
         conversion_factor = float(cntl["output_variables"][var_name]["conversion_factor"])
-#        print(conversion_factor)
+        print(conversion_factor)
         iis = len(vals)
         jjs = len(vals[0])
 #        print(iis, jjs)
@@ -227,6 +227,7 @@ def main(dir):
 
 if __name__ == '__main__':
     dir = "/var/lib/nhm/NHM-PRMS_CONUS"
+    # dir = "/home/rmcd/git/docker-images-fork"
     argc = len(sys.argv) - 1
 
     if argc == 1:
