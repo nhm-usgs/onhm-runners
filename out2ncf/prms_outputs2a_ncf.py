@@ -143,7 +143,7 @@ def write_ncf(dir, varnames):
 #        print(iis, jjs)
 
         for ii in range(0, iis):
-            for jj in range(1, jjs):
+            for jj in range(0, jjs):
                 vals[ii,jj] = vals[ii,jj] * conversion_factor
 
         nhrus = -1
