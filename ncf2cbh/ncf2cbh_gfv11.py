@@ -85,7 +85,7 @@ def run(dir, nc_fn):
                     elif name == 'tmin':
                         v2[jj] = v[ii, nhm_id[jj]-1] * 9 / 5 + 32
                     else:
-                        "don't know how to convert units"
+                        v2[jj] = v[ii, nhm_id[jj]-1]
                 for jj in range(nfeats):
                     if name == 'prcp':
                         fp.write(' ' + '{:.2f}'.format(v2[jj]))
