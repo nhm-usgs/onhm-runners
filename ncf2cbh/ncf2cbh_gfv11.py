@@ -104,17 +104,12 @@ def main(dir, nc_fn):
     run(dir, nc_fn)
 
 if __name__ == '__main__':
-    work_dir = '/var/lib/nhm/NHM-PRMS_CONUS/'
 
-    argc = len(sys.argv) - 1
-    # print(argc)
+    print('setting dir = ' + sys.argv[1])
+    dir = sys.argv[1]
+    enddate = sys.argv[2]
+    end_date = datetime.datetime.strptime(enddate, "%Y-%m-%d")
 
-    if argc == 1:
-        print('setting dir = ' + sys.argv[1])
-        dir = sys.argv[1]
-    else:
-        dir='/var/lib/nhm/NHM-PRMS_CONUS/input/'
-
-    nc_fn = dir + 'climate_'+str(datetime.datetime.now().strftime('%Y_%m_%d'))+'.nc'
+    nc_fn = dir + 'climate_'+ end_date.strftime('%Y_%m_%d') +'.nc'
 
     main(dir, nc_fn)
