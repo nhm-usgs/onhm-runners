@@ -105,7 +105,8 @@ def main(dir, nc_fn):
 
 if __name__ == '__main__':
 
-    print('setting dir = ' + sys.argv[1])
+    print(f'Number of arguments {len(sys.argv)}')
+    print(f'The arguemnts are {str(sys.argv)}')
     dir = sys.argv[1]
     enddate = sys.argv[2]
     prefix = sys.argv[3]
